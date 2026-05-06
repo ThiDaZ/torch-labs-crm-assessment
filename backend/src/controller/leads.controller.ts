@@ -1,5 +1,5 @@
 import type { AuthRequest } from "../middlewares/requireAuth.ts";
-import { createLeadService } from "../services/leads.service.ts";
+import { createLeadService, getLeadsService } from "../services/leads.service.ts";
 import type { Response } from "express";
 
 export const createLead = async (req: AuthRequest, res: Response) => {
@@ -19,5 +19,14 @@ export const createLead = async (req: AuthRequest, res: Response) => {
 		} else {
 			res.status(500).json({ message: "Error creating lead" });
 		}
+	}
+};
+
+export const getLeads = async (req: AuthRequest, res: Response) => {
+	try {
+		const leads = await getLeadsService();
+		res.status(200).json({ leads });
+	} catch (error) {
+		res.status(500).json({ message: "Error fetching leads" });
 	}
 };

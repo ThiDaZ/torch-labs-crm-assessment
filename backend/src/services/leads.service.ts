@@ -12,7 +12,6 @@ interface LeadData {
 }
 
 export const createLeadService = async (leadData: LeadData) => {
-
 	if (
 		!leadData.leadName ||
 		!leadData.email ||
@@ -35,7 +34,12 @@ export const createLeadService = async (leadData: LeadData) => {
 			dealValue: leadData.dealValue,
 			assignedSalespersonId: leadData.assignedSalespersonId,
 		})
-    .returning();
+		.returning();
 
 	return result;
+};
+
+export const getLeadsService = async () => {
+	const leads = await db.select().from(leadsTable);
+	return leads;
 };
