@@ -13,6 +13,10 @@ interface LeadData {
 }
 
 export const createLeadService = async (leadData: LeadData) => {
+	if (!leadData) {
+		throw new Error("Request body is empty");
+	}
+
 	if (
 		!leadData.leadName ||
 		!leadData.email ||
@@ -51,11 +55,16 @@ export const getLeadByIdService = async (id: number) => {
 };
 
 export const updateLeadService = async (id: number, leadData: Partial<LeadData>) => {
+	if (!leadData) {
+		throw new Error("Request body is empty");
+	}
+
 	const result = await db
 		.update(leadsTable)
 		.set({
 			...leadData,
-			dealValue: leadData.dealValue ? Number(leadData.dealValue).toFixed(2) : undefined,
+      dealValue: String(leadData.dealValue),
+			updated_at: new Date(),
 		})
 		.where(eq(leadsTable.id, id))
 		.returning();
