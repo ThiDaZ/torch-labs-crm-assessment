@@ -1,0 +1,23 @@
+import type { AuthRequest } from "../middlewares/requireAuth.ts";
+import { createLeadService } from "../services/leads.service.ts";
+import type { Response } from "express";
+
+export const createLead = async (req: AuthRequest, res: Response) => {
+	try {
+		const leadData = req.body;
+
+		if (!leadData) {
+			res.status(400).json({ message: "Request body is empty" });
+			return;
+		}
+
+		const result = await createLeadService(leadData);
+		res.status(201).json({ message: "Lead created successfully", lead: result });
+	} catch (error) {
+		if (error instanceof Error) {
+			res.status(400).json({ message: error.message });
+		} else {
+			res.status(500).json({ message: "Error creating lead" });
+		}
+	}
+};
