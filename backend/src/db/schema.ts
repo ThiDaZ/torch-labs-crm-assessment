@@ -1,10 +1,10 @@
-import { pgTable, varchar, timestamp, serial, pgEnum, decimal } from "drizzle-orm/pg-core";
+import { pgTable, varchar, timestamp, serial, pgEnum, decimal, integer } from "drizzle-orm/pg-core";
 
 export const usersTable = pgTable("users", {
 	id: serial("id").primaryKey(),
 	name: varchar("name").notNull(),
 	email: varchar("email").notNull().unique(),
-	passwordHash: varchar("password").notNull(),
+	passwordHash: varchar("password_hash").notNull(),
 	created_at: timestamp("created_at").defaultNow().notNull(),
 	updated_at: timestamp("updated_at"),
 });
@@ -34,18 +34,18 @@ export const leadsTable = pgTable("leads", {
 	leadSource: leadSourcesEnum("lead_source").notNull(),
 	status: leadStatusEnum("status").notNull().default("New"),
 	dealValue: decimal("deal_value", { precision: 10, scale: 2 }).notNull().default("0.00"),
-	assignedSalespersonId: serial("assigned_salesperson_id").references(() => usersTable.id),
+	assignedSalespersonId: integer("assigned_salesperson_id").references(() => usersTable.id),
 	created_at: timestamp("created_at").defaultNow().notNull(),
 	updated_at: timestamp("updated_at"),
 });
 
 export const notesTable = pgTable("notes", {
 	id: serial("id").primaryKey(),
-	leadId: serial("lead_id")
+	leadId: integer("lead_id")
 		.references(() => leadsTable.id)
 		.notNull(),
 	content: varchar("content").notNull(),
-	createdBy: serial("created_by")
+	createdBy: integer("created_by")
 		.references(() => usersTable.id)
 		.notNull(),
 	created_at: timestamp("created_at").defaultNow().notNull(),
