@@ -6,7 +6,7 @@ export const usersTable = pgTable("users", {
 	email: varchar("email").notNull().unique(),
 	passwordHash: varchar("password").notNull(),
 	created_at: timestamp("created_at").defaultNow().notNull(),
-	updated_at: timestamp("updated_at").defaultNow(),
+	updated_at: timestamp("updated_at"),
 });
 
 export const leadStatusEnum = pgEnum("lead_status", [
@@ -36,7 +36,7 @@ export const leadsTable = pgTable("leads", {
 	dealValue: decimal("deal_value", { precision: 10, scale: 2 }).notNull().default("0.00"),
 	assignedSalespersonId: serial("assigned_salesperson_id").references(() => usersTable.id),
 	created_at: timestamp("created_at").defaultNow().notNull(),
-	updated_at: timestamp("updated_at").defaultNow(),
+	updated_at: timestamp("updated_at"),
 });
 
 export const notesTable = pgTable("notes", {
@@ -49,5 +49,5 @@ export const notesTable = pgTable("notes", {
 		.references(() => usersTable.id)
 		.notNull(),
 	created_at: timestamp("created_at").defaultNow().notNull(),
-	updated_at: timestamp("updated_at").defaultNow(),
+	updated_at: timestamp("updated_at"),
 });
