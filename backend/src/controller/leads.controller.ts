@@ -1,5 +1,9 @@
 import type { AuthRequest } from "../middlewares/requireAuth.ts";
-import { createLeadService, getLeadsService } from "../services/leads.service.ts";
+import {
+	createLeadService,
+	getLeadByIdService,
+	getLeadsService,
+} from "../services/leads.service.ts";
 import type { Response } from "express";
 
 export const createLead = async (req: AuthRequest, res: Response) => {
@@ -28,5 +32,25 @@ export const getLeads = async (req: AuthRequest, res: Response) => {
 		res.status(200).json({ leads });
 	} catch (error) {
 		res.status(500).json({ message: "Error fetching leads" });
+	}
+};
+
+export const getLeadById = async (req: AuthRequest, res: Response) => {
+	try {
+
+    const id = Number(req.params.id);
+    if (isNaN(id)) {
+      res.status(400).json({ message: "Invalid lead ID" });
+      return;
+    }
+
+		const lead = await getLeadByIdService(id);
+		if (!lead || lead.length === 0) {
+			res.status(404).json({ message: "Lead not found" });
+			return;
+		}
+		res.status(200).json({ lead: lead[0] });
+	} catch (error) {
+		res.status(500).json({ message: "Error fetching lead" });
 	}
 };

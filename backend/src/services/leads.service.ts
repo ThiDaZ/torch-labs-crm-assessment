@@ -1,5 +1,6 @@
 import { db } from "../db/index.ts";
 import { leadsTable } from "../db/schema.ts";
+import { eq } from "drizzle-orm";
 
 interface LeadData {
 	leadName: string;
@@ -31,7 +32,7 @@ export const createLeadService = async (leadData: LeadData) => {
 			email: leadData.email,
 			phoneNumber: leadData.phoneNumber,
 			leadSource: leadData.leadSource,
-			dealValue: leadData.dealValue,
+			dealValue: leadData.dealValue.toFixed(2),
 			assignedSalespersonId: leadData.assignedSalespersonId,
 		})
 		.returning();
@@ -42,4 +43,12 @@ export const createLeadService = async (leadData: LeadData) => {
 export const getLeadsService = async () => {
 	const leads = await db.select().from(leadsTable);
 	return leads;
+};
+
+export const getLeadByIdService = async (id: number) => {
+
+  console.log("Fetching lead with ID:", id);
+
+	const lead = await db.select().from(leadsTable).where(eq(leadsTable.id, id));
+	return lead;
 };
