@@ -14,3 +14,5 @@ backend/dist/
 backend/build/
 
 .vscode/
+
+docker-compose.yml
