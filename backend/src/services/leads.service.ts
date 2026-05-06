@@ -1,17 +1,9 @@
 import { db } from "../db/index.ts";
 import { leadsTable } from "../db/schema.ts";
-import { eq } from "drizzle-orm";
+import { asc, desc, eq, ilike, or } from "drizzle-orm";
+import type { LeadData, LeadSource, LeadStatus } from "../types/index.ts";
 
-interface LeadData {
-	leadName: string;
-	companyName?: string | "";
-	email: string;
-	phoneNumber: string;
-	leadSource: "Website" | "LinkedIn" | "Referral" | "Cold Email";
-	dealValue: number;
-	assignedSalespersonId: number;
-}
-
+// Create new Lead Service
 export const createLeadService = async (leadData: LeadData) => {
 	if (!leadData) {
 		throw new Error("Request body is empty");
@@ -44,16 +36,19 @@ export const createLeadService = async (leadData: LeadData) => {
 	return result;
 };
 
+// Get all leads Service
 export const getLeadsService = async () => {
 	const leads = await db.select().from(leadsTable);
 	return leads;
 };
 
+// Get lead by ID Service
 export const getLeadByIdService = async (id: number) => {
 	const lead = await db.select().from(leadsTable).where(eq(leadsTable.id, id));
 	return lead;
 };
 
+// Update lead Service
 export const updateLeadService = async (id: number, leadData: Partial<LeadData>) => {
 	if (!leadData) {
 		throw new Error("Request body is empty");
@@ -76,6 +71,7 @@ export const updateLeadService = async (id: number, leadData: Partial<LeadData>)
 	return result;
 };
 
+// Delete lead Service
 export const deleteLeadService = async (id: number) => {
 	const result = await db.delete(leadsTable).where(eq(leadsTable.id, id)).returning();
 	console.log(result);
@@ -85,6 +81,7 @@ export const deleteLeadService = async (id: number) => {
 	}
 };
 
+// Change lead status Service
 export const changeLeadStatusService = async (
 	id: number,
 	status: "New" | "Contacted" | "Qualified" | "Proposal Sent" | "Won" | "Lost",
@@ -100,4 +97,34 @@ export const changeLeadStatusService = async (
 	}
 
 	return result;
+};
+ 
+// Search leads Service with filters and sorting
+export const searchLeadsService = async (
+	query?: string,
+	status?: LeadStatus["status"],
+	source?: LeadSource["source"],
+	salePerson?: number,
+	order: "asc" | "desc" = "desc",
+) => {
+	const searchCondition = or(
+		ilike(leadsTable.leadName, `%${query}%`),
+		ilike(leadsTable.email, `%${query}%`),
+		ilike(leadsTable.companyName, `%${query}%`),
+	);
+
+	const filters = [searchCondition];
+
+	if (status) filters.push(eq(leadsTable.status, status));
+	if (source) filters.push(eq(leadsTable.leadSource, source));
+	if (salePerson) filters.push(eq(leadsTable.assignedSalespersonId, salePerson));
+
+	const orderBy = order === "asc" ? asc(leadsTable.created_at) : desc(leadsTable.created_at);
+
+	const leads = await db
+		.select()
+		.from(leadsTable)
+		.where(or(...filters))
+		.orderBy(orderBy);
+	return leads;
 };

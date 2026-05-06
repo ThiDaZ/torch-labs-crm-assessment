@@ -5,10 +5,13 @@ import {
 	deleteLeadService,
 	getLeadByIdService,
 	getLeadsService,
+	searchLeadsService,
 	updateLeadService,
 } from "../services/leads.service.ts";
 import type { Response } from "express";
+import { SearchSchema } from "../schema/index.ts";
 
+// Create new Lead API
 export const createLead = async (req: AuthRequest, res: Response) => {
 	try {
 		const leadData = req.body;
@@ -28,7 +31,8 @@ export const createLead = async (req: AuthRequest, res: Response) => {
 		}
 	}
 };
-
+ 
+// Get all leads API
 export const getLeads = async (req: AuthRequest, res: Response) => {
 	try {
 		const leads = await getLeadsService();
@@ -38,7 +42,9 @@ export const getLeads = async (req: AuthRequest, res: Response) => {
 	}
 };
 
+// Get lead by ID API
 export const getLeadById = async (req: AuthRequest, res: Response) => {
+  console.log("Fetching lead with ID:", req.params.id);
 	try {
 		const id = Number(req.params.id);
 		if (isNaN(id)) {
@@ -57,6 +63,7 @@ export const getLeadById = async (req: AuthRequest, res: Response) => {
 	}
 };
 
+// Update lead API
 export const updateLead = async (req: AuthRequest, res: Response) => {
 	try {
 		const id = Number(req.params.id);
@@ -77,6 +84,7 @@ export const updateLead = async (req: AuthRequest, res: Response) => {
 	}
 };
 
+// Delete lead API
 export const deleteLead = async (req: AuthRequest, res: Response) => {
 	try {
 		const id = Number(req.params.id);
@@ -96,10 +104,7 @@ export const deleteLead = async (req: AuthRequest, res: Response) => {
 	}
 };
 
-interface validStatuses {
-	status: "New" | "Contacted" | "Qualified" | "Proposal Sent" | "Won" | "Lost";
-}
-
+// Change lead status API
 export const changeLeadStatus = async (req: AuthRequest, res: Response) => {
 	try {
 		const id = Number(req.params.id);
@@ -127,6 +132,28 @@ export const changeLeadStatus = async (req: AuthRequest, res: Response) => {
 			res.status(400).json({ message: error.message });
 		} else {
 			res.status(500).json({ message: "Error updating lead status" });
+		}
+	}
+};
+
+// Search leads API
+export const searchLeads = async (req: AuthRequest, res: Response) => {
+  console.log("Search query parameters:", req.query); 
+	try{
+		const result = SearchSchema.safeParse(req.query);
+		if (!result.success) {
+			res.status(400).json({ message: "Invalid query parameters", errors: result.error });
+			return;
+		}
+		const { query, status, source, salePerson, order } = result.data;
+
+		const leads = await searchLeadsService(query, status, source, salePerson, order);
+		res.status(200).json({ leads });
+	} catch (error) {
+		if (error instanceof Error) {
+			res.status(400).json({ message: error.message });
+		} else {
+			res.status(500).json({ message: "Error searching leads" });
 		}
 	}
 };
