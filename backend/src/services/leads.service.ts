@@ -78,9 +78,26 @@ export const updateLeadService = async (id: number, leadData: Partial<LeadData>)
 
 export const deleteLeadService = async (id: number) => {
 	const result = await db.delete(leadsTable).where(eq(leadsTable.id, id)).returning();
-  console.log(result);
+	console.log(result);
 
-  if (result.length === 0) {
-    throw new Error("Lead not found");
-  }
+	if (result.length === 0) {
+		throw new Error("Lead not found");
+	}
+};
+
+export const changeLeadStatusService = async (
+	id: number,
+	status: "New" | "Contacted" | "Qualified" | "Proposal Sent" | "Won" | "Lost",
+) => {
+	const result = await db
+		.update(leadsTable)
+		.set({ status })
+		.where(eq(leadsTable.id, id))
+		.returning();
+
+	if (result.length === 0) {
+		throw new Error("Lead not found");
+	}
+
+	return result;
 };

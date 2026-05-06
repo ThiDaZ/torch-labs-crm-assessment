@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+    changeLeadStatus,
 	createLead,
 	deleteLead,
 	getLeadById,
@@ -17,5 +18,5 @@ router.get("/:id", getLeadById);
 router.get("/", getLeads);
 router.put("/:id", updateLead);
 router.delete("/:id", deleteLead);
-
+router.patch("/:id", changeLeadStatus);
 export default router;

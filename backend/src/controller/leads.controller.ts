@@ -1,5 +1,6 @@
 import type { AuthRequest } from "../middlewares/requireAuth.ts";
 import {
+	changeLeadStatusService,
 	createLeadService,
 	deleteLeadService,
 	getLeadByIdService,
@@ -91,6 +92,41 @@ export const deleteLead = async (req: AuthRequest, res: Response) => {
 			res.status(400).json({ message: error.message });
 		} else {
 			res.status(500).json({ message: "Error deleting lead" });
+		}
+	}
+};
+
+interface validStatuses {
+	status: "New" | "Contacted" | "Qualified" | "Proposal Sent" | "Won" | "Lost";
+}
+
+export const changeLeadStatus = async (req: AuthRequest, res: Response) => {
+	try {
+		const id = Number(req.params.id);
+		if (isNaN(id)) {
+			res.status(400).json({ message: "Invalid lead ID" });
+			return;
+		}
+
+		const { status } = req.body;
+		if (!status) {
+			res.status(400).json({ message: "Status is required" });
+			return;
+		}
+
+		const validStatuses = ["New", "Contacted", "Qualified", "Proposal Sent", "Won", "Lost"];
+		if (!validStatuses.includes(status)) {
+			res.status(400).json({ message: "Invalid status value" });
+			return;
+		}
+
+		const result = await changeLeadStatusService(id, status);
+		res.status(200).json({ message: "Lead status updated successfully", lead: result[0] });
+	} catch (error) {
+		if (error instanceof Error) {
+			res.status(400).json({ message: error.message });
+		} else {
+			res.status(500).json({ message: "Error updating lead status" });
 		}
 	}
 };
