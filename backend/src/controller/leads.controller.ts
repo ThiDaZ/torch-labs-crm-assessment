@@ -1,9 +1,10 @@
 import type { AuthRequest } from "../middlewares/requireAuth.ts";
 import {
 	createLeadService,
+	deleteLeadService,
 	getLeadByIdService,
 	getLeadsService,
-    updateLeadService,
+	updateLeadService,
 } from "../services/leads.service.ts";
 import type { Response } from "express";
 
@@ -71,6 +72,25 @@ export const updateLead = async (req: AuthRequest, res: Response) => {
 			res.status(400).json({ message: error.message });
 		} else {
 			res.status(500).json({ message: "Error updating lead" });
+		}
+	}
+};
+
+export const deleteLead = async (req: AuthRequest, res: Response) => {
+	try {
+		const id = Number(req.params.id);
+		if (isNaN(id)) {
+			res.status(400).json({ message: "Invalid lead ID" });
+			return;
+		}
+
+		await deleteLeadService(id);
+		res.status(200).json({ message: "Lead deleted successfully" });
+	} catch (error) {
+		if (error instanceof Error) {
+			res.status(400).json({ message: error.message });
+		} else {
+			res.status(500).json({ message: "Error deleting lead" });
 		}
 	}
 };

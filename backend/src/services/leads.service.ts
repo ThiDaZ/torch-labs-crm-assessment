@@ -63,7 +63,7 @@ export const updateLeadService = async (id: number, leadData: Partial<LeadData>)
 		.update(leadsTable)
 		.set({
 			...leadData,
-      dealValue: String(leadData.dealValue),
+			dealValue: String(leadData.dealValue),
 			updated_at: new Date(),
 		})
 		.where(eq(leadsTable.id, id))
@@ -74,4 +74,13 @@ export const updateLeadService = async (id: number, leadData: Partial<LeadData>)
 	}
 
 	return result;
+};
+
+export const deleteLeadService = async (id: number) => {
+	const result = await db.delete(leadsTable).where(eq(leadsTable.id, id)).returning();
+  console.log(result);
+
+  if (result.length === 0) {
+    throw new Error("Lead not found");
+  }
 };
