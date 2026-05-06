@@ -32,7 +32,7 @@ export const createLeadService = async (leadData: LeadData) => {
 			email: leadData.email,
 			phoneNumber: leadData.phoneNumber,
 			leadSource: leadData.leadSource,
-			dealValue: leadData.dealValue.toFixed(2),
+			dealValue: Number(leadData.dealValue).toFixed(2),
 			assignedSalespersonId: leadData.assignedSalespersonId,
 		})
 		.returning();
@@ -46,9 +46,23 @@ export const getLeadsService = async () => {
 };
 
 export const getLeadByIdService = async (id: number) => {
-
-  console.log("Fetching lead with ID:", id);
-
 	const lead = await db.select().from(leadsTable).where(eq(leadsTable.id, id));
 	return lead;
+};
+
+export const updateLeadService = async (id: number, leadData: Partial<LeadData>) => {
+	const result = await db
+		.update(leadsTable)
+		.set({
+			...leadData,
+			dealValue: leadData.dealValue ? Number(leadData.dealValue).toFixed(2) : undefined,
+		})
+		.where(eq(leadsTable.id, id))
+		.returning();
+
+	if (result.length === 0) {
+		throw new Error("Lead not found");
+	}
+
+	return result;
 };

@@ -3,6 +3,7 @@ import {
 	createLeadService,
 	getLeadByIdService,
 	getLeadsService,
+    updateLeadService,
 } from "../services/leads.service.ts";
 import type { Response } from "express";
 
@@ -37,12 +38,11 @@ export const getLeads = async (req: AuthRequest, res: Response) => {
 
 export const getLeadById = async (req: AuthRequest, res: Response) => {
 	try {
-
-    const id = Number(req.params.id);
-    if (isNaN(id)) {
-      res.status(400).json({ message: "Invalid lead ID" });
-      return;
-    }
+		const id = Number(req.params.id);
+		if (isNaN(id)) {
+			res.status(400).json({ message: "Invalid lead ID" });
+			return;
+		}
 
 		const lead = await getLeadByIdService(id);
 		if (!lead || lead.length === 0) {
@@ -52,5 +52,25 @@ export const getLeadById = async (req: AuthRequest, res: Response) => {
 		res.status(200).json({ lead: lead[0] });
 	} catch (error) {
 		res.status(500).json({ message: "Error fetching lead" });
+	}
+};
+
+export const updateLead = async (req: AuthRequest, res: Response) => {
+	try {
+		const id = Number(req.params.id);
+		if (isNaN(id)) {
+			res.status(400).json({ message: "Invalid lead ID" });
+			return;
+		}
+
+		const leadData = req.body;
+		const result = await updateLeadService(id, leadData);
+		res.status(200).json({ message: "Lead updated successfully", lead: result[0] });
+	} catch (error) {
+		if (error instanceof Error) {
+			res.status(400).json({ message: error.message });
+		} else {
+			res.status(500).json({ message: "Error updating lead" });
+		}
 	}
 };
