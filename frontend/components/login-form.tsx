@@ -9,6 +9,7 @@ import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { loginUser } from "@/lib/api/auth/login";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
@@ -21,10 +22,17 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 		mutationFn: async (credentials: { email: string; password: string }) => {
 			return loginUser(credentials.email, credentials.password);
 		},
-		onSuccess: (data) => {
-			console.log('Login successful:', data);
+		onSuccess: () => {
+			toast.success("Login successful");
       router.push('/dashboard');
-		}
+		},
+		onError: (error) => {
+			if (error instanceof Error) {
+				toast.error(`Login failed: ${error.message}`);
+			} else {
+				toast.error('Login failed: An unknown error occurred');
+			}
+		},
 	});
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -32,7 +40,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 		console.log("Form submitted");
 
 		if (!email || !password) {
-			console.error("Email and password are required");
+			toast.error("Email and password are required");
 			return;
 		}
 
