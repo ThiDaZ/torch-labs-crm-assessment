@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -5,28 +7,24 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
+import { loginUser } from "@/lib/api/auth/login";
+import { useRouter } from "next/navigation";
+
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
-	const [email, setEmail] = useState("");
+	const [email, setEmail] = useState("") ;
 	const [password, setPassword] = useState("");
 
-	const mutation = useMutation({
-		mutationFn: async () => {
-			const response = await fetch(process.env.API_URL + "/auth/login", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/json",
-				},
-				body: JSON.stringify({ email, password }),
-				credentials: "include",
-			});
+	const router = useRouter();
 
-			if (!response.ok) {
-				const error = await response.json();
-				throw new Error(error.message || 'Login failed');
-			}
-				return response.json();
+	const mutation = useMutation({
+		mutationFn: async (credentials: { email: string; password: string }) => {
+			return loginUser(credentials.email, credentials.password);
 		},
+		onSuccess: (data) => {
+			console.log('Login successful:', data);
+      router.push('/dashboard');
+		}
 	});
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -38,7 +36,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 			return;
 		}
 
-		mutation.mutate();
+		mutation.mutate({ email, password });
 	};
 
 	return (
