@@ -16,7 +16,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-	title: "Flea Leads CRM",
+	title: "Flare Leads CRM",
 	description: "A simple CRM built with Next.js, Express, and Drizzle ORM.",
 };
 

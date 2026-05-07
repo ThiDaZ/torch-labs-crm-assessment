@@ -37,7 +37,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
-		console.log("Form submitted");
 
 		if (!email || !password) {
 			toast.error("Email and password are required");
