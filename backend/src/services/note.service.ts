@@ -30,3 +30,19 @@ export const deleteNoteService = async (noteId: number) => {
 		throw new Error("Note not found");
 	}
 };
+
+// Update Note Service
+export const updateNoteService = async (noteId: number, noteData: any) => {
+	const result = await db
+		.update(notesTable)
+		.set({
+			content: noteData.content,
+			updated_at: new Date(),
+		})
+		.where(eq(notesTable.id, noteId))
+		.returning();
+	if (result.length === 0) {
+		throw new Error("Note not found");
+	}
+	return result;
+};
