@@ -21,3 +21,12 @@ export const getNotesByLeadIdService = async (leadId: number) => {
 	const result = await db.select().from(notesTable).where(eq(notesTable.leadId, leadId));
 	return result;
 };
+
+// Delete Note Service
+export const deleteNoteService = async (noteId: number) => {
+	const result = await db.delete(notesTable).where(eq(notesTable.id, noteId)).returning();
+
+	if (result.length === 0) {
+		throw new Error("Note not found");
+	}
+};
