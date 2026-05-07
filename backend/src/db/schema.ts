@@ -28,13 +28,13 @@ export const leadSourcesEnum = pgEnum("lead_sources", [
 export const leadsTable = pgTable("leads", {
 	id: serial("id").primaryKey(),
 	leadName: varchar("lead_name").notNull(),
-	companyName: varchar("company_name").notNull(),
+	companyName: varchar("company_name"),
 	email: varchar("email").notNull(),
 	phoneNumber: varchar("phone_number").notNull(),
 	leadSource: leadSourcesEnum("lead_source").notNull(),
 	status: leadStatusEnum("status").notNull().default("New"),
 	dealValue: decimal("deal_value", { precision: 10, scale: 2 }).notNull().default("0.00"),
-	assignedSalespersonId: integer("assigned_salesperson_id").references(() => usersTable.id),
+	assignedSalespersonId: integer("assigned_salesperson_id").references(() => usersTable.id).notNull(),
 	created_at: timestamp("created_at").defaultNow().notNull(),
 	updated_at: timestamp("updated_at"),
 });
