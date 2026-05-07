@@ -12,3 +12,13 @@ export interface DashboardMetricsProps {
 		proposalLeads: number;
 	};
 }
+
+export interface Lead {
+	leadName: string;
+	companyName: string;
+	email: string;
+	phoneNumber: string;
+	leadSource: "website" | "LinkedIn" | "referral" | "cold email" | "event";
+	dealValue: number;
+	assignedSalespersonId: string;
+}

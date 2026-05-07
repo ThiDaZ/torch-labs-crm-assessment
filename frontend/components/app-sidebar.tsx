@@ -21,7 +21,6 @@ import {
 	Settings2Icon,
 	CircleHelpIcon,
 	SearchIcon,
-	CommandIcon,
 } from "lucide-react";
 
 const data = {
@@ -33,12 +32,12 @@ const data = {
 	navMain: [
 		{
 			title: "Dashboard",
-			url: "#",
+			url: "/dashboard",
 			icon: <LayoutDashboardIcon />,
 		},
 		{
 			title: "Leads",
-			url: "#",
+			url: "/dashboard/leads",
 			icon: <ListIcon />,
 		},
 	],
