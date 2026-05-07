@@ -1,27 +1,12 @@
 "use client";
 
-import {
-	Card,
-	CardAction,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/card";
+import { Card, CardAction, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { DashboardMetricsProps } from "@/lib/types";
 import { TrendingUpIcon, UserPlus, Award, Users2 } from "lucide-react";
 
-interface SectionCardsProps {
-	data: {
-		totalLeads: number;
-		newLeads: number;
-		qualifiedLeads: number;
-		wonLeads: number;
-		lostLeads: number;
-		totalEstimatedValue: number;
-		totalWonValue: number;
-	} | undefined;
-}
 
-export function SectionCards({ data }: SectionCardsProps) {
+
+export function SectionCards({ data }: DashboardMetricsProps) {
 	const cardData = [
 		{
 			title: "Total Leads",
@@ -39,8 +24,8 @@ export function SectionCards({ data }: SectionCardsProps) {
 			trendIcon: <Award size={20} fill="#f59e0b" color="#f59e0b" />,
 		},
 		{
-			title: "Conversion Rate",
-			value: data ? `${(data.wonLeads / data.totalLeads * 100).toFixed(1)}%` : "0%",
+			title: "Est. Total Value",
+			value: data ? `LKR.${data.totalEstimatedValue.toLocaleString()}` : "LKR.0",
 			trendIcon: <TrendingUpIcon size={20} fill="#f59e0b" color="#f59e0b" />,
 		},
 	];
