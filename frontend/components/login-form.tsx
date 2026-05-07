@@ -4,14 +4,31 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
+import { useMutation } from "@tanstack/react-query";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
-
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
 
+	const mutation = useMutation({
+		mutationFn: async () => {
+			const response = await fetch(process.env.API_URL + "/auth/login", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({ email, password }),
+				credentials: "include",
+			});
 
-	
+			if (!response.ok) {
+				const error = await response.json();
+				throw new Error(error.message || 'Login failed');
+			}
+				return response.json();
+		},
+	});
+
 	const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
 		e.preventDefault();
 		console.log("Form submitted");
@@ -21,9 +38,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 			return;
 		}
 
-		
-		
-		console.log({ email, password });
+		mutation.mutate();
 	};
 
 	return (
