@@ -57,7 +57,7 @@ export function ValueBarChart({ className, data }: ValueBarChartProps) {
 						/>
 						<XAxis dataKey="count" type="number" hide />
 						<ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-						<Bar dataKey="count" fill="var(--color-desktop)" radius={4}>
+						<Bar dataKey="count" radius={4}>
 							<LabelList
 								dataKey="count"
 								position="right"

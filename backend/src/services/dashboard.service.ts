@@ -1,4 +1,3 @@
-import { count } from "drizzle-orm";
 import { db } from "../db/index.ts";
 import { leadsTable } from "../db/schema.ts";
 
