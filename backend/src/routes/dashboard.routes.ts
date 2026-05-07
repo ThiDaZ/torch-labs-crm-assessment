@@ -5,7 +5,6 @@ import { requireAuth } from "../middlewares/requireAuth.ts";
 const router = Router();
 router.use(requireAuth);
 
-
-router.get("/dashboard-metrics", getDashboardMetrics);
+router.get("/metrics", getDashboardMetrics);
 
 export default router;

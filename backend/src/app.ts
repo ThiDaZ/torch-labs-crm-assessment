@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import authRouter from "./routes/auth.routes.ts";
 import leadsRouter from "./routes/leads.routes.ts";
 import noteRouter from "./routes/note.routes.ts";
@@ -16,6 +17,7 @@ app.use(
 );
 
 app.use(express.json());
+app.use(cookieParser());
 
 app.use("/api/auth", authRouter);
 app.use("/api/leads", leadsRouter);

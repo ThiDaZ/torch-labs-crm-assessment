@@ -9,26 +9,38 @@ import {
 } from "@/components/ui/card";
 import { TrendingUpIcon, UserPlus, Award, Users2 } from "lucide-react";
 
-export function SectionCards() {
+interface SectionCardsProps {
+	data: {
+		totalLeads: number;
+		newLeads: number;
+		qualifiedLeads: number;
+		wonLeads: number;
+		lostLeads: number;
+		totalEstimatedValue: number;
+		totalWonValue: number;
+	} | undefined;
+}
+
+export function SectionCards({ data }: SectionCardsProps) {
 	const cardData = [
 		{
 			title: "Total Leads",
-			value: "1,250",
+			value: data ? data.totalLeads.toString() : "0",
 			trendIcon: <Users2 fill="#f59e0b" size={20} color="#f59e0b" />,
 		},
 		{
 			title: "New Leads",
-			value: "1,234",
+			value: data ? data.newLeads.toString() : "0",
 			trendIcon: <UserPlus size={20} fill="#f59e0b" color="#f59e0b" />,
 		},
 		{
 			title: "Qualified Leads",
-			value: "301",
+			value: data ? data.qualifiedLeads.toString() : "0",
 			trendIcon: <Award size={20} fill="#f59e0b" color="#f59e0b" />,
 		},
 		{
 			title: "Conversion Rate",
-			value: "4.5%",
+			value: data ? `${(data.wonLeads / data.totalLeads * 100).toFixed(1)}%` : "0%",
 			trendIcon: <TrendingUpIcon size={20} fill="#f59e0b" color="#f59e0b" />,
 		},
 	];
