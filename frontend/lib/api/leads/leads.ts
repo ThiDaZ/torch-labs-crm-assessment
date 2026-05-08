@@ -110,3 +110,39 @@ export const updateLead = async (leadId: string, updatedData: Partial<Lead>) => 
 	}
 	return response.json();
 };
+
+export const searchLeads = async (
+	query?: string,
+	status?: string,
+	source?: string,
+	salePerson?: string,
+	order: "asc" | "desc" = "desc"
+): Promise<LeadListItem[]> => {
+	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+	if (!apiUrl) {
+		throw new Error("API URL is not defined in environment variables");
+	}
+
+	const params = new URLSearchParams();
+	if (query) params.append("query", query);
+	if (status && status !== "all") params.append("status", status);
+	if (source && source !== "all") params.append("source", source);
+	if (salePerson && salePerson !== "all") params.append("salePerson", salePerson);
+	params.append("order", order);
+
+	const response = await fetch(`${apiUrl}/leads/search?${params.toString()}`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		credentials: "include",
+	});
+
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		const errorMessage = errorResponse.error ?? "Failed to search leads";
+		throw new Error(errorMessage);
+	}
+	const data: { leads?: LeadListItem[] } = await response.json();
+	return data.leads ?? [];
+};

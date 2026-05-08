@@ -21,6 +21,7 @@ import { toast } from "sonner";
 import type { LeadListItem } from "@/lib/types";
 import { EditLeadSheet } from "../edit-lead-sheet";
 import DeleteLeadDialog from "../delete-lead-dialog";
+import Search from "../search";
 
 interface Lead {
 	id: string;
@@ -58,6 +59,7 @@ export default function KanbanBoard() {
 	const [editSheetKey, setEditSheetKey] = useState(0);
 	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 	const [selectedLeadForDelete, setSelectedLeadForDelete] = useState<LeadListItem | null>(null);
+	const [filteredLeads, setFilteredLeads] = useState<LeadListItem[]>([]);
 
 	const queryClient = useQueryClient();
 
@@ -66,6 +68,9 @@ export default function KanbanBoard() {
 		queryKey: ["leads"],
 		queryFn: getLeads,
 	});
+
+	// Use filtered leads if available, otherwise use all leads
+	const displayLeads = filteredLeads.length > 0 ? filteredLeads : leadsData;
 
 	// update status mutation with cache invalidation
 	const updateStatusMutation = useMutation({
@@ -122,7 +127,7 @@ export default function KanbanBoard() {
 		};
 
     // group leads by status and map to the format needed for the board
-		leadsData.forEach((lead: LeadListItem) => {
+		displayLeads.forEach((lead: LeadListItem) => {
 			const status = statusMap[lead.status] ?? "new";
 			if (groupedByStatus[status]) {
 				groupedByStatus[status].push({
@@ -147,7 +152,7 @@ export default function KanbanBoard() {
 			{ id: "won", title: "Won", lead: groupedByStatus.won, color: columnColors.won },
 			{ id: "lost", title: "Lost", lead: groupedByStatus.lost, color: columnColors.lost },
 		];
-	}, [leadsData]);
+	}, [displayLeads]);
 
 	const handleDragStart = (e: React.DragEvent, task: Lead, columnId: string) => {
 		e.dataTransfer.setData("text/plain", JSON.stringify({ task, sourceColumnId: columnId }));
@@ -202,6 +207,8 @@ export default function KanbanBoard() {
 	return (
 		<>
 		<div className="flex flex-col ">
+
+	<Search onFilter={setFilteredLeads} />
 
 			{isLoading && (
 				<div className="flex items-center justify-center flex-1">

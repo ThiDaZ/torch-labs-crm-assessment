@@ -120,7 +120,7 @@ export const changeLeadStatusService = async (
 
 	return result;
 };
- 
+
 // Search leads Service with filters and sorting
 export const searchLeadsService = async (
 	query?: string,
@@ -129,13 +129,17 @@ export const searchLeadsService = async (
 	salePerson?: number,
 	order: "asc" | "desc" = "desc",
 ) => {
-	const searchCondition = or(
-		ilike(leadsTable.leadName, `%${query}%`),
-		ilike(leadsTable.email, `%${query}%`),
-		ilike(leadsTable.companyName, `%${query}%`),
-	);
+	const filters = [];
 
-	const filters = [searchCondition];
+	// only add if query exists
+	if (query && query.trim()) {
+		const searchCondition = or(
+			ilike(leadsTable.leadName, `%${query}%`),
+			ilike(leadsTable.email, `%${query}%`),
+			ilike(leadsTable.companyName, `%${query}%`),
+		);
+		filters.push(searchCondition);
+	}
 
 	if (status) filters.push(eq(leadsTable.status, status));
 	if (source) filters.push(eq(leadsTable.leadSource, source));
@@ -144,9 +148,25 @@ export const searchLeadsService = async (
 	const orderBy = order === "asc" ? asc(leadsTable.created_at) : desc(leadsTable.created_at);
 
 	const leads = await db
-		.select()
+		.select({
+			id: leadsTable.id,
+			leadName: leadsTable.leadName,
+			companyName: leadsTable.companyName,
+			email: leadsTable.email,
+			phoneNumber: leadsTable.phoneNumber,
+			leadSource: leadsTable.leadSource,
+			status: leadsTable.status,
+			dealValue: leadsTable.dealValue,
+			assignedSalesperson: {
+				id: usersTable.id,
+				name: usersTable.name,
+			},
+			created_at: leadsTable.created_at,
+			updated_at: leadsTable.updated_at,
+		})
 		.from(leadsTable)
-		.where(or(...filters))
+		.leftJoin(usersTable, eq(leadsTable.assignedSalespersonId, usersTable.id))
+		.where(filters.length > 0 ? or(...filters) : undefined)
 		.orderBy(orderBy);
 	return leads;
 };
