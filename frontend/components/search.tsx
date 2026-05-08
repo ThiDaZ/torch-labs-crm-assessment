@@ -17,12 +17,14 @@ export default function Search({ onFilter }: { onFilter?: (leads: LeadListItem[]
 	const [filterStatus, setFilterStatus] = useState("all");
 	const [filterSource, setFilterSource] = useState("all");
 	const [filterSalesperson, setFilterSalesperson] = useState("all");
+	const [filterOrder, setFilterOrder] = useState<"asc" | "desc">("desc");
 
 	const hasActiveFilters =
 		searchQuery.trim() !== "" ||
 		filterStatus !== "all" ||
 		filterSource !== "all" ||
-		filterSalesperson !== "all";
+		filterSalesperson !== "all" ||
+		filterOrder !== "desc";
 
 	const leadSources = ["Website", "LinkedIn", "Referral", "Cold Email"];
 	const statusOptions = [
@@ -40,13 +42,22 @@ export default function Search({ onFilter }: { onFilter?: (leads: LeadListItem[]
 	});
 
 	const { data: filteredLeadsData } = useQuery({
-		queryKey: ["leads", "search", searchQuery, filterStatus, filterSource, filterSalesperson],
+		queryKey: [
+			"leads",
+			"search",
+			searchQuery,
+			filterStatus,
+			filterSource,
+			filterSalesperson,
+			filterOrder,
+		],
 		queryFn: () =>
 			searchLeads(
 				searchQuery || undefined,
 				filterStatus,
 				filterSource,
-				filterSalesperson
+				filterSalesperson,
+				filterOrder
 			),
 		enabled: hasActiveFilters,
 		staleTime: 0,
@@ -64,6 +75,7 @@ export default function Search({ onFilter }: { onFilter?: (leads: LeadListItem[]
 		setFilterStatus("all");
 		setFilterSource("all");
 		setFilterSalesperson("all");
+		setFilterOrder("desc");
 	};
 	return (
 		<>
@@ -123,6 +135,17 @@ export default function Search({ onFilter }: { onFilter?: (leads: LeadListItem[]
 								{person.name}
 								</SelectItem>
 							))}
+						</SelectContent>
+					</Select>
+
+					{/* Order Filter */}
+					<Select value={filterOrder} onValueChange={(value) => setFilterOrder(value as "asc" | "desc")}>
+						<SelectTrigger className="w-[180px] bg-background">
+							<SelectValue placeholder="Order by" />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="desc">Newest first</SelectItem>
+							<SelectItem value="asc">Oldest first</SelectItem>
 						</SelectContent>
 					</Select>
 
