@@ -66,3 +66,25 @@ export const deleteNote = async (noteId: number) => {
 		throw new Error(errorMessage);
 	}
 };
+
+// Update note API call
+export const updateNote = async (noteId: number, content: string) => {
+	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+	if (!apiUrl) {
+		throw new Error("API URL is not defined in environment variables");
+	}
+	const response = await fetch(`${apiUrl}/note/${noteId}`, {
+		method: "PUT",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({ content }),
+		credentials: "include",
+	});
+	if (!response.ok) {
+		const errorResponse = await response.json();
+		const errorMessage = errorResponse.error ?? "Failed to update note";
+		throw new Error(errorMessage);
+	}
+	return response.json();
+};

@@ -1,5 +1,5 @@
 import { db } from "../db/index.ts";
-import { eq } from "drizzle-orm";
+import { desc, eq } from "drizzle-orm";
 
 import { notesTable, usersTable } from "../db/schema.ts";
 
@@ -30,7 +30,8 @@ export const getNotesByLeadIdService = async (leadId: number) => {
 		})
 		.from(notesTable)
 		.leftJoin(usersTable, eq(notesTable.createdBy, usersTable.id))
-		.where(eq(notesTable.leadId, leadId));
+		.where(eq(notesTable.leadId, leadId))
+		.orderBy(desc(notesTable.created_at));
 	return result;
 };
 

@@ -1,10 +1,10 @@
 "use client";
 
-import { Calendar, MessageSquare, Plus, Trash2, User } from "lucide-react";
+import { Calendar, Check, MessageSquare, Pen, Plus, Trash2, User, X } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { Textarea } from "./ui/textarea";
 import { Button } from "./ui/button";
-import { createNote, getNotesByLeadId, deleteNote } from "@/lib/api/notes/notes";
+import { createNote, getNotesByLeadId, deleteNote, updateNote } from "@/lib/api/notes/notes";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -13,7 +13,10 @@ import { formattedDate } from "@/lib/util/formattedDate";
 
 export default function LeadNotes({ leadId }: { leadId: string }) {
 	const [isAdding, setIsAdding] = useState(false);
+	const [editingNoteId, setEditingNoteId] = useState<number | null>(null);
 	const [newNote, setNewNote] = useState("");
+
+	const [editContent, setEditContent] = useState("");
 
 	const queryClient = useQueryClient();
 
@@ -56,6 +59,24 @@ export default function LeadNotes({ leadId }: { leadId: string }) {
 		},
 	});
 
+	const updateNoteMutation = useMutation({
+		mutationFn: async (data: { noteId: number; content: string }) => {
+			const { noteId, content } = data;
+			return updateNote(noteId, content);
+		},
+		onSuccess: () => {
+			toast.success("Note updated successfully");
+			queryClient.invalidateQueries({ queryKey: ["leadNotes", leadId] });
+		},
+		onError: (error) => {
+			if (error instanceof Error) {
+				toast.error(`Failed to update note: ${error.message}`);
+			} else {
+				toast.error("Failed to update note: An unknown error occurred");
+			}
+		},
+	});
+
 	const handleAddNote = () => {
 		const content = newNote.trim();
 		if (!content) {
@@ -72,13 +93,27 @@ export default function LeadNotes({ leadId }: { leadId: string }) {
 		deleteNoteMutation.mutate(noteId);
 	};
 
+	const handleUpdateNote = (noteId: number, content: string) => {
+		if (!content) {
+			toast.error("Note content cannot be empty");
+			return;
+		}
+		updateNoteMutation.mutate({ noteId, content });
+    handleCancelEdit();
+	};
+
+	const handleCancelEdit = () => {
+		setEditingNoteId(null);
+		setEditContent("");
+	};
+
 	return (
 		<Card className="bg-background" style={{ boxShadow: "0 0 rgba(0, 0, 0, 0.1)" }}>
 			<CardHeader className="pb-4">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2">
-						{/* <MessageSquare className="h-5 w-5 text-primary" /> */}
-						<CardTitle className="text-3xl font-semibold text-foreground">
+						<MessageSquare className="h-5 w-5 text-primary" />
+						<CardTitle className="text-2xl font-semibold text-foreground">
 							Notes ({data?.length || 0})
 						</CardTitle>
 					</div>
@@ -129,27 +164,72 @@ export default function LeadNotes({ leadId }: { leadId: string }) {
 								key={note.id}
 								className="p-4 rounded-lg border border-border bg-secondary/30 hover:bg-secondary/50 transition-colors group"
 							>
-								<div className="flex items-start justify-between gap-3">
-									<p className="text-sm text-foreground leading-relaxed flex-1">{note.content}</p>
-									<Button
-										variant="ghost"
-										size="icon"
-										className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-										onClick={() => handleDeleteNote(note.id)}
-									>
-										<Trash2 className="h-4 w-4" />
-									</Button>
-								</div>
-								<div className="flex items-center gap-4 text-xs text-muted-foreground mt-3">
-									<div className="flex items-center gap-1">
-										<User className="h-3 w-3" />
-										<span>{note.createdByName}</span>
+								{editingNoteId === note.id ? (
+									<div className="space-y-3">
+										<Textarea
+											value={editContent}
+											onChange={(e) => setEditContent(e.target.value)}
+											className="min-h-20 bg-background border-border resize-none"
+										/>
+										<div className="flex justify-end gap-2">
+											<Button
+												variant="ghost"
+												size="sm"
+												onClick={handleCancelEdit}
+												className="gap-1"
+											>
+												<X className="h-4 w-4" />
+												Cancel
+											</Button>
+											<Button
+												size="sm"
+												onClick={() => handleUpdateNote(note.id, editContent)}
+												disabled={!editContent.trim()}
+												className="gap-1"
+											>
+												<Check className="h-4 w-4" />
+												Save
+											</Button>
+										</div>
 									</div>
-									<div className="flex items-center gap-1">
-										<Calendar className="h-3 w-3" />
-										<span>{formattedDate(note.createdAt)}</span>
-									</div>
-								</div>
+								) : (
+									<>
+										<div className="flex items-start justify-between gap-3">
+											<p className="text-sm text-foreground leading-relaxed flex-1">
+												{note.content}
+											</p>
+											<Button
+												variant="ghost"
+												size="icon"
+												className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground "
+												onClick={() => {
+													setEditingNoteId(note.id);
+                          setEditContent(note.content);
+												}}
+											>
+												<Pen className="h-4 w-4" />
+											</Button>
+											<Button
+												variant="ghost"
+												size="icon"
+												className="h-7 w-7 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+												onClick={() => handleDeleteNote(note.id)}
+											>
+												<Trash2 className="h-4 w-4" />
+											</Button>
+										</div>
+										<div className="flex items-center gap-4 text-xs text-muted-foreground mt-3">
+											<div className="flex items-center gap-1">
+												<User className="h-3 w-3" />
+												<span>{note.createdByName}</span>
+											</div>
+											<div className="flex items-center gap-1">
+												<Calendar className="h-3 w-3" />
+												<span>{formattedDate(note.createdAt)}</span>
+											</div>
+										</div>
+									</>
+								)}
 							</div>
 						))}
 					</div>
