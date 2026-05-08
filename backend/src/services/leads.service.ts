@@ -1,5 +1,5 @@
 import { db } from "../db/index.ts";
-import { leadsTable } from "../db/schema.ts";
+import { leadsTable, notesTable } from "../db/schema.ts";
 import { asc, desc, eq, ilike, or } from "drizzle-orm";
 import type { LeadData, LeadSource, LeadStatus } from "../types/index.ts";
 
@@ -73,12 +73,16 @@ export const updateLeadService = async (id: number, leadData: Partial<LeadData>)
 
 // Delete lead Service
 export const deleteLeadService = async (id: number) => {
+	await db.delete(notesTable).where(eq(notesTable.leadId, id));
+
 	const result = await db.delete(leadsTable).where(eq(leadsTable.id, id)).returning();
 	console.log(result);
 
 	if (result.length === 0) {
 		throw new Error("Lead not found");
 	}
+
+	return result;
 };
 
 // Change lead status Service
