@@ -8,7 +8,7 @@ import { getDashboardMetrics } from "@/lib/api/dashboard/metrics";
 import { useQuery } from "@tanstack/react-query";
 
 export default function Page() {
-	const { data, isLoading, isError, error } = useQuery({
+	const { data } = useQuery({
 		queryKey: ["dashboardMetrics"],
 		queryFn: getDashboardMetrics,
 	});
@@ -18,6 +18,7 @@ export default function Page() {
 			<SiteHeader title="Dashboard" />
 			<div className="flex flex-1 flex-col">
 				<div className="@container/main flex flex-1 flex-col gap-2">
+
 					<div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
 						<SectionCards data={data} />
 

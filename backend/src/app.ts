@@ -5,6 +5,7 @@ import authRouter from "./routes/auth.routes.ts";
 import leadsRouter from "./routes/leads.routes.ts";
 import noteRouter from "./routes/note.routes.ts";
 import dashboardRouter from "./routes/dashboard.routes.ts";
+import userRouter from "./routes/user.routes.ts";
 
 const app: express.Application = express();
 
@@ -12,7 +13,7 @@ app.use(
 	cors({
 		origin: process.env.FRONTEND_URL || "http://localhost:3000",
 		credentials: true,
-		methods: ["GET", "POST", "PUT", "DELETE"],
+		methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 	}),
 );
 
@@ -23,5 +24,6 @@ app.use("/api/auth", authRouter);
 app.use("/api/leads", leadsRouter);
 app.use("/api/note", noteRouter);
 app.use("/api/dashboard", dashboardRouter);
+app.use("/api/users", userRouter);
 
 export default app;
