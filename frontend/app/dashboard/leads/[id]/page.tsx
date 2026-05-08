@@ -1,4 +1,5 @@
 import { LeadDetailClient } from "@/components/lead-details";
+import LeadNotes from "@/components/lead-notes";
 import { SiteHeader } from "@/components/site-header";
 
 export default async function LeadDetailsPage({ params }: { params: { id: string } }) {
@@ -13,7 +14,7 @@ export default async function LeadDetailsPage({ params }: { params: { id: string
 						<div className="px-6 py-4">
 							<div className="flex items-center justify-between">
 								<div>
-									<h1 className="text-2xl font-bold text-foreground">Lead Details</h1>
+									<h1 className="text-3xl font-bold text-foreground">Lead Details</h1>
 									<p className="text-sm text-muted-foreground mt-1">
 										Details and information about the lead. You can edit the lead information by
 										clicking the edit button.
@@ -21,9 +22,12 @@ export default async function LeadDetailsPage({ params }: { params: { id: string
 								</div>
 							</div>
 						</div>
-						<div className="min-h-screen bg-background">
-							<div className="mx-auto px-4">
-								<LeadDetailClient leadId={id} />
+						<div className="px-6">
+							<LeadDetailClient leadId={id} />
+						</div>
+						<div className="mt-6 px-3">
+							<div>
+								<LeadNotes leadId={id} />
 							</div>
 						</div>
 					</div>

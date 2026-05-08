@@ -20,7 +20,7 @@ export interface Lead {
 	phoneNumber: string;
 	leadSource: "Website" | "LinkedIn" | "Referral" | "Cold Email";
 	dealValue: number;
-	status: "New" | "Contacted" | "Qualified" | "Proposal Sent" | "Won" | "Lost";
+	status?: "New" | "Contacted" | "Qualified" | "Proposal Sent" | "Won" | "Lost";
 	assignedSalespersonId: number;
 }
 
@@ -61,4 +61,13 @@ export interface LeadDetail {
 export interface User {
 	id: number | string;
 	name: string;
+}
+
+export interface Note {
+	id: number;
+	leadId: number;
+	content: string;
+	createdBy: number;
+	createdAt: string;
+	updatedAt: string;
 }

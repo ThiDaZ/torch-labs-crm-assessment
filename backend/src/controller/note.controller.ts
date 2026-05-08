@@ -15,6 +15,9 @@ export const createNote = async (req: AuthRequest, resp: Response) => {
 			resp.status(400).json({ message: "Request body is empty" });
 			return;
 		}
+
+		noteData.createdBy = req.user?.userId;
+
 		const result = await createNoteService(noteData);
 		resp.status(201).json({ message: "Note created successfully", note: result });
 	} catch (error) {
