@@ -3,7 +3,6 @@
 import * as React from "react";
 
 import { NavMain } from "@/components/nav-main";
-import { NavSecondary } from "@/components/nav-secondary";
 import { NavUser } from "@/components/nav-user";
 import Image from "next/image";
 import {
@@ -18,17 +17,12 @@ import {
 import {
 	LayoutDashboardIcon,
 	ListIcon,
-	Settings2Icon,
-	CircleHelpIcon,
-	SearchIcon,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { getCurrentUser } from "@/lib/api/auth/me";
 
-const data = {
-	user: {
-		name: "shadcn",
-		email: "m@example.com",
-		avatar: "/avatars/shadcn.jpg",
-	},
+const menu = {
+
 	navMain: [
 		{
 			title: "Dashboard",
@@ -42,26 +36,15 @@ const data = {
 		},
 	],
 
-	navSecondary: [
-		{
-			title: "Settings",
-			url: "#",
-			icon: <Settings2Icon />,
-		},
-		{
-			title: "Get Help",
-			url: "#",
-			icon: <CircleHelpIcon />,
-		},
-		{
-			title: "Search",
-			url: "#",
-			icon: <SearchIcon />,
-		},
-	],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+
+	const {data} = useQuery({
+		queryKey: ["currentUser"],
+		queryFn: getCurrentUser,
+	});
+
 	return (
 		<Sidebar collapsible="offcanvas" {...props}>
 			<SidebarHeader>
@@ -83,11 +66,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				</SidebarMenu>
 			</SidebarHeader>
 			<SidebarContent>
-				<NavMain items={data.navMain} />
-				<NavSecondary items={data.navSecondary} className="mt-auto" />
+				<NavMain items={menu.navMain} />
 			</SidebarContent>
 			<SidebarFooter>
-				<NavUser user={data.user} />
+				{data?.user ? <NavUser user={data.user} /> : null}
 			</SidebarFooter>
 		</Sidebar>
 	);
