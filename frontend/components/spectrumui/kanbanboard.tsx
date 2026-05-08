@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import {
 	Building2,
 	DollarSign,
+	Eye,
 	GripVertical,
 	MessageSquare,
 	MoreHorizontal,
@@ -22,6 +23,7 @@ import type { LeadListItem } from "@/lib/types";
 import { EditLeadSheet } from "../edit-lead-sheet";
 import DeleteLeadDialog from "../delete-lead-dialog";
 import Search from "../search";
+import { useRouter } from "next/navigation";
 
 interface Lead {
 	id: string;
@@ -53,6 +55,9 @@ const columnColors: Record<string, string> = {
 };
 
 export default function KanbanBoard() {
+
+  const router = useRouter();
+
 	const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 	const [openEditSheet, setOpenEditSheet] = useState(false);
 	const [selectedLeadForEdit, setSelectedLeadForEdit] = useState<LeadListItem | null>(null);
@@ -62,6 +67,7 @@ export default function KanbanBoard() {
 	const [filteredLeads, setFilteredLeads] = useState<LeadListItem[] | null>(null);
 
 	const queryClient = useQueryClient();
+
 
 	//get leads data
 	const {
@@ -299,6 +305,16 @@ export default function KanbanBoard() {
 														</Button>
 														{openMenuId === lead.id && (
 															<div className="absolute right-0 top-7 z-10 min-w-30 bg-card border border-border rounded-md shadow-lg py-1">
+																<button
+																	className="w-full px-3 py-1.5 text-sm text-left hover:bg-secondary flex items-center gap-2 text-foreground"
+																	onClick={() => {
+																		setOpenMenuId(null);
+																		router.push(`/dashboard/leads/${lead.id}`);
+																	}}
+																>
+																	<Eye className="h-3 w-3" />
+																	View Details
+																</button>
 																<button
 																	className="w-full px-3 py-1.5 text-sm text-left hover:bg-secondary flex items-center gap-2 text-foreground"
 																	onClick={() => {
