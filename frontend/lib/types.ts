@@ -68,6 +68,7 @@ export interface Note {
 	leadId: number;
 	content: string;
 	createdBy: number;
+	createdByName?: string;
 	createdAt: string;
 	updatedAt: string;
 }

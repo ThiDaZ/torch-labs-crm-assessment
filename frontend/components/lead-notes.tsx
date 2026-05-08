@@ -9,8 +9,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Note } from "@/lib/types";
+import { formattedDate } from "@/lib/util/formattedDate";
 
-export default function LeadNotes({leadId}: { leadId: string }) {
+export default function LeadNotes({ leadId }: { leadId: string }) {
 	const [isAdding, setIsAdding] = useState(false);
 	const [newNote, setNewNote] = useState("");
 
@@ -72,7 +73,7 @@ export default function LeadNotes({leadId}: { leadId: string }) {
 	};
 
 	return (
-		<Card className="bg-background" style={{ boxShadow: "0 rgba(0, 0, 0, 0.1)" }}>
+		<Card className="bg-background" style={{ boxShadow: "0 0 rgba(0, 0, 0, 0.1)" }}>
 			<CardHeader className="pb-4">
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-2">
@@ -82,7 +83,7 @@ export default function LeadNotes({leadId}: { leadId: string }) {
 						</CardTitle>
 					</div>
 					{!isAdding && (
-						<Button className="gap-1" onClick={() => setIsAdding(true)} >
+						<Button className="gap-1" onClick={() => setIsAdding(true)}>
 							<Plus className="h-4 w-4" />
 							Add Note
 						</Button>
@@ -123,7 +124,7 @@ export default function LeadNotes({leadId}: { leadId: string }) {
 					</div>
 				) : (
 					<div className="space-y-3">
-						{(data ?? []).map((note : Note) => (
+						{(data ?? []).map((note: Note) => (
 							<div
 								key={note.id}
 								className="p-4 rounded-lg border border-border bg-secondary/30 hover:bg-secondary/50 transition-colors group"
@@ -142,11 +143,11 @@ export default function LeadNotes({leadId}: { leadId: string }) {
 								<div className="flex items-center gap-4 text-xs text-muted-foreground mt-3">
 									<div className="flex items-center gap-1">
 										<User className="h-3 w-3" />
-										<span>{note.createdBy}</span>
+										<span>{note.createdByName}</span>
 									</div>
 									<div className="flex items-center gap-1">
 										<Calendar className="h-3 w-3" />
-										<span>({note.createdAt})</span>
+										<span>{formattedDate(note.createdAt)}</span>
 									</div>
 								</div>
 							</div>

@@ -1,7 +1,7 @@
 import { db } from "../db/index.ts";
 import { eq } from "drizzle-orm";
 
-import { notesTable } from "../db/schema.ts";
+import { notesTable, usersTable } from "../db/schema.ts";
 
 // Create New Note Service
 export const createNoteService = async (noteData: any) => {
@@ -18,7 +18,19 @@ export const createNoteService = async (noteData: any) => {
 
 // Get Notes for a Lead
 export const getNotesByLeadIdService = async (leadId: number) => {
-	const result = await db.select().from(notesTable).where(eq(notesTable.leadId, leadId));
+	const result = await db
+		.select({
+			id: notesTable.id,
+			leadId: notesTable.leadId,
+			content: notesTable.content,
+			createdBy: notesTable.createdBy,
+			createdByName: usersTable.name,
+			createdAt: notesTable.created_at,
+			updatedAt: notesTable.updated_at,
+		})
+		.from(notesTable)
+		.leftJoin(usersTable, eq(notesTable.createdBy, usersTable.id))
+		.where(eq(notesTable.leadId, leadId));
 	return result;
 };
 
