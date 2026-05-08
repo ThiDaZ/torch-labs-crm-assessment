@@ -62,7 +62,26 @@ export const getLeadsService = async () => {
 
 // Get lead by ID Service
 export const getLeadByIdService = async (id: number) => {
-	const lead = await db.select().from(leadsTable).where(eq(leadsTable.id, id));
+	const lead = await db
+		.select({
+			id: leadsTable.id,
+			leadName: leadsTable.leadName,
+			companyName: leadsTable.companyName,
+			email: leadsTable.email,
+			phoneNumber: leadsTable.phoneNumber,
+			leadSource: leadsTable.leadSource,
+			status: leadsTable.status,
+			dealValue: leadsTable.dealValue,
+			assignedSalesperson: {
+				id: usersTable.id,
+				name: usersTable.name,
+			},
+			created_at: leadsTable.created_at,
+			updated_at: leadsTable.updated_at,
+		})
+		.from(leadsTable)
+		.leftJoin(usersTable, eq(leadsTable.assignedSalespersonId, usersTable.id))
+		.where(eq(leadsTable.id, id));
 	return lead;
 };
 

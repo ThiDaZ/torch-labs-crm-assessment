@@ -1,5 +1,6 @@
-import { Lead, LeadListItem } from "@/lib/types";
+import { Lead, LeadDetail, LeadListItem } from "@/lib/types";
 
+// Create a new lead API call
 export const createLead = async (newLead: Lead) => {
 	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 	if (!apiUrl) {
@@ -23,6 +24,7 @@ export const createLead = async (newLead: Lead) => {
 	return response.json();
 };
 
+// Get all leads API call
 export const getLeads = async (): Promise<LeadListItem[]> => {
 	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 	if (!apiUrl) {
@@ -46,6 +48,52 @@ export const getLeads = async (): Promise<LeadListItem[]> => {
 	return data.leads ?? [];
 };
 
+// Get lead by ID API call
+export const getLeadById = async (leadId: string): Promise<LeadDetail> => {
+	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+	if (!apiUrl) {
+		throw new Error("API URL is not defined in environment variables");
+	}
+	const response = await fetch(`${apiUrl}/leads/${leadId}`, {
+		method: "GET",
+		headers: {
+			"Content-Type": "application/json",
+		},
+		credentials: "include",
+	});
+
+	const payload: { lead?: Record<string, unknown>; error?: string; message?: string } =
+		await response.json();
+
+	if (!response.ok) {
+		const errorMessage = payload.error ?? payload.message ?? "Failed to fetch lead details";
+		throw new Error(errorMessage);
+	}
+
+	const lead = payload.lead;
+	if (!lead) {
+		throw new Error("Failed to fetch lead details");
+	}
+
+	return {
+		id: String(lead.id ?? leadId),
+		leadName: String(lead.leadName ?? ""),
+		companyName: String(lead.companyName ?? ""),
+		email: String(lead.email ?? ""),
+		phoneNumber: String(lead.phoneNumber ?? ""),
+		leadSource: String(lead.leadSource ?? ""),
+		status: String(lead.status ?? ""),
+		dealValue: Number(lead.dealValue ?? 0),
+		assignedSalesperson: {
+			id: String((lead.assignedSalesperson as { id?: string | number } | undefined)?.id ?? ""),
+			name: String((lead.assignedSalesperson as { name?: string } | undefined)?.name ?? ""),
+		},
+		createdAt: String(lead.created_at ?? lead.createdAt ?? ""),
+		updatedAt: lead.updated_at ? String(lead.updated_at) : lead.updatedAt ? String(lead.updatedAt) : null,
+	};
+};
+
+// Update lead status API call
 export const updateStatus = async (leadId: string, newStatus: string) => {
 	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 	if (!apiUrl) {
@@ -68,6 +116,7 @@ export const updateStatus = async (leadId: string, newStatus: string) => {
 	return response.json();
 };
 
+// Delete lead API call
 export const deleteLead = async (leadId: string) => {
 	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 	if (!apiUrl) {
@@ -89,6 +138,7 @@ export const deleteLead = async (leadId: string) => {
 	return response.json();
 };
 
+// Update lead API call
 export const updateLead = async (leadId: string, updatedData: Partial<Lead>) => {
 	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 	if (!apiUrl) {
@@ -111,12 +161,13 @@ export const updateLead = async (leadId: string, updatedData: Partial<Lead>) => 
 	return response.json();
 };
 
+// Search leads API call with filters and sorting
 export const searchLeads = async (
 	query?: string,
 	status?: string,
 	source?: string,
 	salePerson?: string,
-	order: "asc" | "desc" = "desc"
+	order: "asc" | "desc" = "desc",
 ): Promise<LeadListItem[]> => {
 	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 	if (!apiUrl) {

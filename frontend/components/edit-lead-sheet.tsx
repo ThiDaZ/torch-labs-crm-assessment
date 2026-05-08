@@ -65,6 +65,9 @@ export function EditLeadSheet({ open, onOpenChange, lead }: EditLeadSheetProps) 
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: ["leads"] });
+			if (lead) {
+				queryClient.invalidateQueries({ queryKey: ["lead", lead.id] });
+			}
 			onOpenChange(false);
 			toast.success("Lead updated successfully");
 		},
