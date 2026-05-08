@@ -23,8 +23,9 @@ export default function Leads() {
 								</div>
 							</div>
 						</div>
-						
+
 						<KanbanBoard />
+						
 					</div>
 				</div>
 			</div>
