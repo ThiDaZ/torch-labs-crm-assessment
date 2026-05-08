@@ -39,3 +39,8 @@ export interface LeadListItem {
 	createdAt: string;
 	updatedAt: string;
 }
+
+export interface User {
+	id: number | string;
+	name: string;
+}

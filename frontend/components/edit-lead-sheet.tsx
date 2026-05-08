@@ -21,9 +21,10 @@ import {
 	SheetTitle,
 } from "@/components/ui/sheet";
 import { updateLead } from "@/lib/api/leads/leads";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import type { Lead, LeadListItem } from "@/lib/types";
+import type { Lead, LeadListItem, User } from "@/lib/types";
+import { getAllUsers } from "@/lib/api/users/users";
 
 interface EditLeadSheetProps {
 	open: boolean;
@@ -31,13 +32,8 @@ interface EditLeadSheetProps {
 	lead: LeadListItem | null;
 }
 
-const leadSources = ["website", "LinkedIn", "referral", "cold email", "event"] as const;
+const leadSources = ["Website", "LinkedIn", "Referral", "Cold Email"] as const;
 
-const salespeople = [
-	{ id: "1", name: "Alice Johnson" },
-	{ id: "2", name: "Bob Lee" },
-	{ id: "3", name: "Carla Gomez" },
-];
 
 export function EditLeadSheet({ open, onOpenChange, lead }: EditLeadSheetProps) {
 	const [leadName, setLeadName] = useState(lead?.leadName ?? "");
@@ -47,10 +43,17 @@ export function EditLeadSheet({ open, onOpenChange, lead }: EditLeadSheetProps) 
 	const [leadSource, setLeadSource] = useState<Lead["leadSource"] | "">(
 		(lead?.leadSource as Lead["leadSource"]) ?? "",
 	);
-	const [assignedTo, setAssignedTo] = useState(lead?.assignedSalesperson?.id ?? "");
+	const [assignedTo, setAssignedTo] = useState(String(lead?.assignedSalesperson?.id ?? ""));
 	const [estimatedValue, setEstimatedValue] = useState(lead ? String(lead.dealValue ?? "") : "");
 
 	const queryClient = useQueryClient();
+
+	const { data } = useQuery({
+		queryKey: ["salespeople"],
+		queryFn: getAllUsers,
+	});
+
+	const salespeople = data?.map((user: User) => ({ id: String(user.id), name: user.name })) || [];
 
 	const updateLeadMutation = useMutation({
 		mutationFn: async (updatedLead: Partial<Lead>) => {
@@ -89,7 +92,7 @@ export function EditLeadSheet({ open, onOpenChange, lead }: EditLeadSheetProps) 
 			phoneNumber: phone.trim(),
 			leadSource: leadSource || undefined,
 			dealValue: Number(estimatedValue) || 0,
-			assignedSalespersonId: assignedTo,
+			assignedSalespersonId: Number(assignedTo),
 		};
 
 		updateLeadMutation.mutate(payload);
@@ -111,12 +114,21 @@ export function EditLeadSheet({ open, onOpenChange, lead }: EditLeadSheetProps) 
 
 					<div className="grid gap-2">
 						<Label htmlFor="company-name">Company Name</Label>
-						<Input id="company-name" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
+						<Input
+							id="company-name"
+							value={companyName}
+							onChange={(e) => setCompanyName(e.target.value)}
+						/>
 					</div>
 
 					<div className="grid gap-2">
 						<Label htmlFor="email">Email</Label>
-						<Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+						<Input
+							id="email"
+							type="email"
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
+						/>
 					</div>
 
 					<div className="grid gap-2">
@@ -126,7 +138,10 @@ export function EditLeadSheet({ open, onOpenChange, lead }: EditLeadSheetProps) 
 
 					<div className="grid gap-2">
 						<Label htmlFor="lead-source">Lead Source</Label>
-						<Select value={leadSource} onValueChange={(val) => setLeadSource(val as Lead["leadSource"])}>
+						<Select
+							value={leadSource}
+							onValueChange={(val) => setLeadSource(val as Lead["leadSource"])}
+						>
 							<SelectTrigger id="lead-source">
 								<SelectValue placeholder="Select source" />
 							</SelectTrigger>
@@ -147,9 +162,9 @@ export function EditLeadSheet({ open, onOpenChange, lead }: EditLeadSheetProps) 
 								<SelectValue placeholder="Select salesperson" />
 							</SelectTrigger>
 							<SelectContent>
-								{salespeople.map((person) => (
-									<SelectItem key={person.id} value={person.id}>
-										{person.name}
+								{salespeople.map((s: { id: string; name: string }) => (
+									<SelectItem key={s.id} value={String(s.id)}>
+										{s.name}
 									</SelectItem>
 								))}
 							</SelectContent>

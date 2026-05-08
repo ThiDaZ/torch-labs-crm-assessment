@@ -21,16 +21,13 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
-import { Lead } from "@/lib/types";
+import { Lead, User } from "@/lib/types";
 import { createLead } from "@/lib/api/leads/leads";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { getAllUsers } from "@/lib/api/users/users";
 
-interface User {
-	id: number | string;
-	name: string;
-}
+
 
 export function CreateLeadSheet() {
 	const [leadName, setLeadName] = useState("");
