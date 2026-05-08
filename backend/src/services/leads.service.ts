@@ -1,5 +1,5 @@
 import { db } from "../db/index.ts";
-import { leadsTable, notesTable } from "../db/schema.ts";
+import { leadsTable, notesTable, usersTable } from "../db/schema.ts";
 import { asc, desc, eq, ilike, or } from "drizzle-orm";
 import type { LeadData, LeadSource, LeadStatus } from "../types/index.ts";
 
@@ -38,7 +38,25 @@ export const createLeadService = async (leadData: LeadData) => {
 
 // Get all leads Service
 export const getLeadsService = async () => {
-	const leads = await db.select().from(leadsTable);
+	const leads = await db
+		.select({
+			id: leadsTable.id,
+			leadName: leadsTable.leadName,
+			companyName: leadsTable.companyName,
+			email: leadsTable.email,
+			phoneNumber: leadsTable.phoneNumber,
+			leadSource: leadsTable.leadSource,
+			status: leadsTable.status,
+			dealValue: leadsTable.dealValue,
+			assignedSalesperson: {
+				id: usersTable.id,
+				name: usersTable.name,
+			},
+			created_at: leadsTable.created_at,
+			updated_at: leadsTable.updated_at,
+		})
+		.from(leadsTable)
+		.leftJoin(usersTable, eq(leadsTable.assignedSalespersonId, usersTable.id));
 	return leads;
 };
 

@@ -201,12 +201,12 @@ export default function KanbanBoard() {
 
 	return (
 		<>
-		<div className="flex flex-col h-screen">
+		<div className="flex flex-col ">
 			<div className="mb-8 text-center pt-6">
 				<h1 className="text-4xl font-light text-neutral-900 dark:text-neutral-100 mb-2">
-					Kanban Board
+					Lead Management
 				</h1>
-				<p className="text-neutral-700 dark:text-neutral-300">Drag and drop task management</p>
+				<p className="text-neutral-700 dark:text-neutral-300">Drag and drop lead management</p>
 			</div>
 
 			{isLoading && (
