@@ -119,7 +119,6 @@ This will insert 3 sample leads across different statuses (New, Contacted, Quali
 
 ## Known Limitations
 
-- This project is not deployed and is designed for local development only.
 - There is no admin to create new user account or manage user accounts.
 - There is no automated test suite in the repository yet.
 - The frontend and backend must stay aligned on their local URLs so CORS and cookie-based auth continue to work.
