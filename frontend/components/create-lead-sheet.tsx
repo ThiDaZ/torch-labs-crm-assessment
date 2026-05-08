@@ -23,7 +23,7 @@ import {
 } from "@/components/ui/sheet";
 import { Lead } from "@/lib/types";
 import { createLead } from "@/lib/api/leads/leads";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 export function CreateLeadSheet() {
@@ -36,17 +36,21 @@ export function CreateLeadSheet() {
 	const [estimatedValue, setEstimatedValue] = useState("");
 	const [open, setOpen] = useState(false);
 
+	const queryClient = useQueryClient();
 	const leadSources = ["website", "LinkedIn", "referral", "cold email", "event"];
 
 	const salespeople = [
 		{ id: "1", name: "Alice Johnson" },
 	];
 
-	const mutate = useMutation({
+	const createLeadMutation = useMutation({
 		mutationFn: async (newLead: Lead) => {
 			return createLead(newLead);
 		},
 		onSuccess: () => {
+			// Invalidate leads cache to refetch
+			queryClient.invalidateQueries({ queryKey: ["leads"] });
+			
 			// reset form
 			setLeadName("");
 			setCompanyName("");
@@ -80,8 +84,7 @@ export function CreateLeadSheet() {
 			assignedSalespersonId: assignedTo,
 		};
 
-		mutate.mutate(payload);
-		console.log("Create lead:", payload);
+		createLeadMutation.mutate(payload);
 	}
 
 	return (
@@ -95,7 +98,7 @@ export function CreateLeadSheet() {
 					<SheetDescription>Fill out the form to add a new lead.</SheetDescription>
 				</SheetHeader>
 
-				<form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 px-4">
+					<form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 px-4">
 					<div className="grid gap-2">
 						<Label htmlFor="lead-name">Lead Name</Label>
 						<Input id="lead-name" value={leadName} onChange={(e) => setLeadName(e.target.value)} />
@@ -173,7 +176,9 @@ export function CreateLeadSheet() {
 						<SheetClose asChild>
 							<Button variant="outline">Cancel</Button>
 						</SheetClose>
-						<Button type="submit">Create Lead</Button>
+						<Button type="submit" disabled={createLeadMutation.isPending}>
+							{createLeadMutation.isPending ? "Creating..." : "Create Lead"}
+						</Button>
 					</div>
 				</form>
 

@@ -22,3 +22,20 @@ export interface Lead {
 	dealValue: number;
 	assignedSalespersonId: string;
 }
+
+export interface LeadListItem {
+	id: string;
+	leadName: string;
+	companyName: string;
+	email: string;
+	phoneNumber: string;
+	leadSource: string;
+	status: string;
+	dealValue: number;
+	assignedSalesperson: {
+		id: string;
+		name: string;
+	};
+	createdAt: string;
+	updatedAt: string;
+}
