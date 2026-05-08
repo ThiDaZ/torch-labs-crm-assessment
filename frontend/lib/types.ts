@@ -18,9 +18,9 @@ export interface Lead {
 	companyName: string;
 	email: string;
 	phoneNumber: string;
-	leadSource: "website" | "LinkedIn" | "referral" | "cold email" | "event";
+	leadSource: "Website" | "LinkedIn" | "Referral" | "Cold Email";
 	dealValue: number;
-	assignedSalespersonId: string;
+	assignedSalespersonId: number;
 }
 
 export interface LeadListItem {

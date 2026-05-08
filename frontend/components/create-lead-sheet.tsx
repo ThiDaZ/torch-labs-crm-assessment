@@ -23,8 +23,14 @@ import {
 } from "@/components/ui/sheet";
 import { Lead } from "@/lib/types";
 import { createLead } from "@/lib/api/leads/leads";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { getAllUsers } from "@/lib/api/users/users";
+
+interface User {
+	id: number | string;
+	name: string;
+}
 
 export function CreateLeadSheet() {
 	const [leadName, setLeadName] = useState("");
@@ -37,20 +43,23 @@ export function CreateLeadSheet() {
 	const [open, setOpen] = useState(false);
 
 	const queryClient = useQueryClient();
-	const leadSources = ["website", "LinkedIn", "referral", "cold email", "event"];
+	const leadSources = ["Website", "LinkedIn", "Referral", "Cold Email"];
 
-	const salespeople = [
-		{ id: "1", name: "Alice Johnson" },
-	];
+	const { data } = useQuery({
+		queryKey: ["salespeople"],
+		queryFn: getAllUsers,
+	});
+
+	const salespeople = data?.map((user: User) => ({ id: String(user.id), name: user.name })) || [];
 
 	const createLeadMutation = useMutation({
 		mutationFn: async (newLead: Lead) => {
 			return createLead(newLead);
 		},
 		onSuccess: () => {
-			// Invalidate leads cache to refetch
+			// invalidate leads cache to refetch
 			queryClient.invalidateQueries({ queryKey: ["leads"] });
-			
+
 			// reset form
 			setLeadName("");
 			setCompanyName("");
@@ -81,7 +90,7 @@ export function CreateLeadSheet() {
 			phoneNumber: phone,
 			leadSource: leadSource as Lead["leadSource"],
 			dealValue: Number(estimatedValue) || 0,
-			assignedSalespersonId: assignedTo,
+			assignedSalespersonId: Number(assignedTo),
 		};
 
 		createLeadMutation.mutate(payload);
@@ -98,7 +107,7 @@ export function CreateLeadSheet() {
 					<SheetDescription>Fill out the form to add a new lead.</SheetDescription>
 				</SheetHeader>
 
-					<form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 px-4">
+				<form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4 px-4">
 					<div className="grid gap-2">
 						<Label htmlFor="lead-name">Lead Name</Label>
 						<Input id="lead-name" value={leadName} onChange={(e) => setLeadName(e.target.value)} />
@@ -134,7 +143,7 @@ export function CreateLeadSheet() {
 							<SelectTrigger id="lead-source">
 								<SelectValue placeholder="Select source" />
 							</SelectTrigger>
-						
+
 							<SelectContent>
 								{leadSources.map((s) => (
 									<SelectItem key={s} value={s}>
@@ -142,18 +151,18 @@ export function CreateLeadSheet() {
 									</SelectItem>
 								))}
 							</SelectContent>
-							</Select>
+						</Select>
 					</div>
 
 					<div className="grid gap-2">
 						<Label htmlFor="assigned-to">Assigned Salesperson</Label>
-						<Select value={assignedTo} onValueChange={(val) => setAssignedTo(val)}>
+						<Select value={assignedTo} onValueChange={setAssignedTo}>
 							<SelectTrigger id="assigned-to">
 								<SelectValue placeholder="Select salesperson" />
 							</SelectTrigger>
 							<SelectContent>
-								{salespeople.map((s) => (
-									<SelectItem key={s.id} value={s.id}>
+								{salespeople.map((s: { id: string; name: string }) => (
+									<SelectItem key={s.id} value={String(s.id)}>
 										{s.name}
 									</SelectItem>
 								))}
