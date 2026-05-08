@@ -1,0 +1,22 @@
+version: "3.8"
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: flare-leads-postgres
+    environment:
+      POSTGRES_USER: enter_username_here
+      POSTGRES_PASSWORD: enter_password_here
+      POSTGRES_DB: flare_leads_db # Change this as you like
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - flare-leads-net
+
+volumes:
+  postgres_data:
+
+networks:
+  flare-leads-net:
+    driver: bridge
