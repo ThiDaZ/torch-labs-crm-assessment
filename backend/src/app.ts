@@ -12,6 +12,7 @@ const app: express.Application = express();
 app.use(
 	cors({
 		origin: process.env.FRONTEND_URL || "http://localhost:3000",
+    // CRITICAL: Must be true to allow Next.js proxy to read the JWT cookie
 		credentials: true,
 		methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
 	}),
