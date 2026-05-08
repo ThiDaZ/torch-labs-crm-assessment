@@ -30,7 +30,7 @@ export default function ValueCharts({ data }: DashboardMetricsProps) {
 								<CardTitle
 									className={`text-lg sm:text-2xl font-semibold tabular-nums @[250px]/card:text-3xl ${item.foreground}`}
 								>
-									LKR {item.value}
+									LKR {item.value.toLocaleString()}
 								</CardTitle>
 								<CardAction>
 									<div className="flex items-center justify-center rounded-full h-12 w-12">

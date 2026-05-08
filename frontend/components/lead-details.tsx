@@ -15,6 +15,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { getLeadById } from "@/lib/api/leads/leads";
 import { useQuery } from "@tanstack/react-query";
+import { getCurrentUser } from "@/lib/api/auth/me";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { EditLeadSheet } from "./edit-lead-sheet";
@@ -50,6 +51,8 @@ export function LeadDetailClient({ leadId }: { leadId: string }) {
 		queryFn: () => getLeadById(leadId),
 		enabled: Boolean(leadId),
 	});
+
+	const { data: me } = useQuery({ queryKey: ["me"], queryFn: getCurrentUser });
 
 	if (isLoading) {
 		return (

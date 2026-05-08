@@ -313,7 +313,7 @@ export default function KanbanBoard() {
 																	}}
 																>
 																	<Eye className="h-3 w-3" />
-																	View Details
+																	View
 																</button>
 																<button
 																	className="w-full px-3 py-1.5 text-sm text-left hover:bg-secondary flex items-center gap-2 text-foreground"
@@ -352,8 +352,7 @@ export default function KanbanBoard() {
 
 												<div className="mt-3">
 													<div className="flex items-center gap-1 text-xs text-muted-foreground">
-														<DollarSign className="h-3 w-3" />
-														<span className="font-medium text-foreground">{lead.dealValue}</span>
+														<span className="font-medium text-foreground">LKR {lead.dealValue.toLocaleString()}</span>
 													</div>
 													<Separator className="bg-muted-foreground/30 mt-4 mb-2" />
 													<div className="flex items-center justify-between">

@@ -1,5 +1,6 @@
 import { pgTable, varchar, timestamp, serial, pgEnum, decimal, integer } from "drizzle-orm/pg-core";
 
+// Users Table
 export const usersTable = pgTable("users", {
 	id: serial("id").primaryKey(),
 	name: varchar("name").notNull(),
@@ -9,6 +10,7 @@ export const usersTable = pgTable("users", {
 	updated_at: timestamp("updated_at"),
 });
 
+// Enum for Lead Status
 export const leadStatusEnum = pgEnum("lead_status", [
 	"New",
 	"Contacted",
@@ -18,6 +20,7 @@ export const leadStatusEnum = pgEnum("lead_status", [
 	"Lost",
 ]);
 
+// Lead Sources Enum
 export const leadSourcesEnum = pgEnum("lead_sources", [
 	"Website",
 	"LinkedIn",
@@ -25,6 +28,7 @@ export const leadSourcesEnum = pgEnum("lead_sources", [
 	"Cold Email",
 ]);
 
+// Leads Table
 export const leadsTable = pgTable("leads", {
 	id: serial("id").primaryKey(),
 	leadName: varchar("lead_name").notNull(),
@@ -39,6 +43,7 @@ export const leadsTable = pgTable("leads", {
 	updated_at: timestamp("updated_at"),
 });
 
+// Notes Table
 export const notesTable = pgTable("notes", {
 	id: serial("id").primaryKey(),
 	leadId: integer("lead_id")

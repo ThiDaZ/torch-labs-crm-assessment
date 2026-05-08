@@ -24,6 +24,7 @@ export const requireAuth = (req: AuthRequest, res: Response, next: NextFunction)
 		return res.status(500).json({ error: "Internal server error" });
 	}
 
+	// Verify token and extract user info
 	try {
 		const decoded = jwt.verify(token, JWT_SECRET) as unknown as { userId: number; email: string };
 		req.user = decoded;

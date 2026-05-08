@@ -4,8 +4,6 @@ import { Card, CardAction, CardDescription, CardHeader, CardTitle } from "@/comp
 import { DashboardMetricsProps } from "@/lib/types";
 import { TrendingUpIcon, UserPlus, Award, Users2 } from "lucide-react";
 
-
-
 export function SectionCards({ data }: DashboardMetricsProps) {
 	const cardData = [
 		{

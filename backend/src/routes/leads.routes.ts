@@ -11,7 +11,6 @@ import {
 import { requireAuth } from "../middlewares/requireAuth.ts";
 
 const router: Router = Router();
-
 router.use(requireAuth);
 
 router.get("/search", searchLeads);
