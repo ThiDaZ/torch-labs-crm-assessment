@@ -9,7 +9,7 @@ import {
 	AlertDialogTitle,
 } from "./ui/alert-dialog";
 
-interface LeadDeleteDialogProps {
+interface DeleteLeadDialogProps {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
 	handleDeleteLead: () => void;
@@ -17,21 +17,21 @@ interface LeadDeleteDialogProps {
 	data: { id: string; name: string; companyName: string };
 }
 
-export default function LeadDeleteDialog({
+export default function DeleteLeadDialog({
 	open,
 	onOpenChange,
 	handleDeleteLead,
 	isDeleting = false,
 	data,
-}: LeadDeleteDialogProps) {
+}: DeleteLeadDialogProps) {
 	return (
 		<AlertDialog open={open} onOpenChange={onOpenChange}>
 			<AlertDialogContent>
 				<AlertDialogHeader>
 					<AlertDialogTitle>Delete Lead</AlertDialogTitle>
 					<AlertDialogDescription>
-						Are you sure you want to delete {data.name} from {data.companyName}?
-						This action cannot be undone.
+						Are you sure you want to delete {data.name} from {data.companyName}? This action cannot
+						be undone.
 					</AlertDialogDescription>
 				</AlertDialogHeader>
 				<AlertDialogFooter>

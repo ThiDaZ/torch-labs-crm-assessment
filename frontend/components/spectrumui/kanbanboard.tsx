@@ -16,10 +16,11 @@ import {
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { Separator } from "../ui/separator";
-import { getLeads, updateStatus } from "@/lib/api/leads/leads";
+import { getLeads, updateStatus, deleteLead } from "@/lib/api/leads/leads";
 import { toast } from "sonner";
 import type { LeadListItem } from "@/lib/types";
 import { EditLeadSheet } from "../edit-lead-sheet";
+import DeleteLeadDialog from "../delete-lead-dialog";
 
 interface Lead {
 	id: string;
@@ -55,9 +56,12 @@ export default function KanbanBoard() {
 	const [openEditSheet, setOpenEditSheet] = useState(false);
 	const [selectedLeadForEdit, setSelectedLeadForEdit] = useState<LeadListItem | null>(null);
 	const [editSheetKey, setEditSheetKey] = useState(0);
+	const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
+	const [selectedLeadForDelete, setSelectedLeadForDelete] = useState<LeadListItem | null>(null);
 
 	const queryClient = useQueryClient();
 
+  //get leads data
 	const { data: leadsData = [], isLoading, isError } = useQuery({
 		queryKey: ["leads"],
 		queryFn: getLeads,
@@ -79,6 +83,24 @@ export default function KanbanBoard() {
 		},
 	});
 
+	// delete lead mutation with cache invalidation
+	const deleteLeadMutation = useMutation({
+		mutationFn: (leadId: string) => deleteLead(leadId),
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: ["leads"] });
+			setOpenDeleteDialog(false);
+			toast.success("Lead deleted successfully");
+		},
+		onError: (error) => {
+			if (error instanceof Error) {
+				toast.error(`Failed to delete lead: ${error.message}`);
+			} else {
+				toast.error("Failed to delete lead");
+			}
+		},
+	});
+
+  // transform leads data into columns for the Kanban board
 	const columns: Column[] = useMemo(() => {
 		const groupedByStatus: Record<string, Lead[]> = {
 			"new": [],
@@ -89,6 +111,7 @@ export default function KanbanBoard() {
 			"lost": [],
 		};
 
+
 		const statusMap: Record<string, string> = {
 			New: "new",
 			Contacted: "contacted",
@@ -98,6 +121,7 @@ export default function KanbanBoard() {
 			Lost: "lost",
 		};
 
+    // group leads by status and map to the format needed for the board
 		leadsData.forEach((lead: LeadListItem) => {
 			const status = statusMap[lead.status] ?? "new";
 			if (groupedByStatus[status]) {
@@ -137,6 +161,17 @@ export default function KanbanBoard() {
 		setSelectedLeadForEdit(lead);
 		setEditSheetKey((current) => current + 1);
 		setOpenEditSheet(true);
+	};
+
+	const openDeleteDialogFn = (lead: LeadListItem) => {
+		setSelectedLeadForDelete(lead);
+		setOpenDeleteDialog(true);
+	};
+
+	const handleDeleteLeadConfirm = () => {
+		if (selectedLeadForDelete?.id) {
+			deleteLeadMutation.mutate(String(selectedLeadForDelete.id));
+		}
 	};
 
 	const handleDrop = (e: React.DragEvent, targetColumnId: string) => {
@@ -261,7 +296,13 @@ export default function KanbanBoard() {
 														</button>
 														<button
 															className="w-full px-3 py-1.5 text-sm text-left hover:bg-secondary flex items-center gap-2 text-destructive"
-														onClick={() => toast.info("Delete dialog is disabled in the current board view")}
+														onClick={() => {
+															const fullLead = leadsData.find((item) => String(item.id) === lead.id);
+															if (fullLead) {
+																setOpenMenuId(null);
+																openDeleteDialogFn(fullLead);
+															}
+														}}
 														>
 															<Trash2 className="h-3 w-3" />
 															Delete
@@ -302,7 +343,18 @@ export default function KanbanBoard() {
 
 		</div>
 
-		<EditLeadSheet key={editSheetKey} open={openEditSheet} onOpenChange={setOpenEditSheet} lead={selectedLeadForEdit} />
+		<DeleteLeadDialog
+			open={openDeleteDialog}
+			onOpenChange={setOpenDeleteDialog}
+			handleDeleteLead={handleDeleteLeadConfirm}
+			isDeleting={deleteLeadMutation.isPending}
+			data={{
+				id: selectedLeadForDelete?.id ?? "",
+				name: selectedLeadForDelete?.leadName ?? "",
+				companyName: selectedLeadForDelete?.companyName ?? "",
+			}}
+		/>
+      <EditLeadSheet key={editSheetKey} open={openEditSheet} onOpenChange={setOpenEditSheet} lead={selectedLeadForEdit} />
 		</>
 	);
 }
