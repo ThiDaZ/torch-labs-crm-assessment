@@ -44,7 +44,6 @@ export const getLeads = async (req: AuthRequest, res: Response) => {
 
 // Get lead by ID API
 export const getLeadById = async (req: AuthRequest, res: Response) => {
-  console.log("Fetching lead with ID:", req.params.id);
 	try {
 		const id = Number(req.params.id);
 		if (isNaN(id)) {

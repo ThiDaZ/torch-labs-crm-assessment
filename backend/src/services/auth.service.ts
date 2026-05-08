@@ -5,6 +5,7 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
 
+// Login Service
 export const loginService = async (loginData: { email: string; password: string }) => {
 	if (!loginData.email || !loginData.password) {
 		throw new Error("Email and password are required");
