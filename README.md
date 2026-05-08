@@ -105,18 +105,26 @@ Run the test user script after the schema is applied so the login works on a fre
 The project uses PostgreSQL 17 via Docker Compose. Set the username and password in `docker-compose.yml` before starting the container, then make sure the same values are reflected in `DATABASE_URL`.
 
 After the database container is running, apply the schema from `backend/src/db/schema.ts` with `pnpm db:push`. That creates the users, leads, and notes tables plus the lead source/status enums. Once the schema exists, run `pnpm exec tsx src/db/test_user.ts` to insert the demo admin account.
-  
+
+## Adding Sample Data
+
+To populate the database with sample leads and notes for testing, run the sample data seed script:
+
+```bash
+cd backend
+pnpm exec tsx src/db/sample_data.ts
+```
+
+This will insert 3 sample leads across different statuses (New, Contacted, Qualified) and 3 associated notes. The script clears existing leads and notes before inserting new data, so use it to reset your test data as needed.
 
 ## Known Limitations
 
+- This project is not deployed and is designed for local development only.
 - There is no admin to create new user account or manage user accounts.
-
 - There is no automated test suite in the repository yet.
-
 - The frontend and backend must stay aligned on their local URLs so CORS and cookie-based auth continue to work.
-
 - The seeded admin insert is intended for a fresh database and may need cleanup if run more than once.
-- There is no pagination or infinite scrolling for large lead datasets yet
+- There is no pagination or infinite scrolling for large lead datasets yet.
 - Real-time collaboration is not implemented, so multiple users cannot see live pipeline updates simultaneously.
 - The authentication system currently uses a single JWT without refresh token rotation.
   
