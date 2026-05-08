@@ -1,6 +1,6 @@
 import { db } from "../db/index.ts";
 import { leadsTable, notesTable, usersTable } from "../db/schema.ts";
-import { asc, desc, eq, ilike, or } from "drizzle-orm";
+import { and, asc, desc, eq, ilike, or } from "drizzle-orm";
 import type { LeadData, LeadSource, LeadStatus } from "../types/index.ts";
 
 // Create new Lead Service
@@ -166,7 +166,7 @@ export const searchLeadsService = async (
 		})
 		.from(leadsTable)
 		.leftJoin(usersTable, eq(leadsTable.assignedSalespersonId, usersTable.id))
-		.where(filters.length > 0 ? or(...filters) : undefined)
+		.where(filters.length > 0 ? and(...filters) : undefined)
 		.orderBy(orderBy);
 	return leads;
 };

@@ -10,11 +10,19 @@ import { searchLeads } from "@/lib/api/leads/leads";
 import { getAllUsers } from "@/lib/api/users/users";
 import type { LeadListItem, User } from "@/lib/types";
 
-export default function Search({ onFilter }: { onFilter?: (leads: LeadListItem[]) => void }) {
+const EMPTY_LEADS: LeadListItem[] = [];
+
+export default function Search({ onFilter }: { onFilter?: (leads: LeadListItem[] | null) => void }) {
 	const [searchQuery, setSearchQuery] = useState("");
 	const [filterStatus, setFilterStatus] = useState("all");
 	const [filterSource, setFilterSource] = useState("all");
 	const [filterSalesperson, setFilterSalesperson] = useState("all");
+
+	const hasActiveFilters =
+		searchQuery.trim() !== "" ||
+		filterStatus !== "all" ||
+		filterSource !== "all" ||
+		filterSalesperson !== "all";
 
 	const leadSources = ["Website", "LinkedIn", "Referral", "Cold Email"];
 	const statusOptions = [
@@ -31,7 +39,7 @@ export default function Search({ onFilter }: { onFilter?: (leads: LeadListItem[]
 		queryFn: getAllUsers,
 	});
 
-	const { data: filteredLeads = [] } = useQuery({
+	const { data: filteredLeadsData } = useQuery({
 		queryKey: ["leads", "search", searchQuery, filterStatus, filterSource, filterSalesperson],
 		queryFn: () =>
 			searchLeads(
@@ -40,19 +48,16 @@ export default function Search({ onFilter }: { onFilter?: (leads: LeadListItem[]
 				filterSource,
 				filterSalesperson
 			),
+		enabled: hasActiveFilters,
 		staleTime: 0,
 	});
 
-	// Notify parent of filtered results
-	useEffect(() => {
-		onFilter?.(filteredLeads);
-	}, [filteredLeads, onFilter]);
+	const filteredLeads = filteredLeadsData ?? EMPTY_LEADS;
 
-	const hasActiveFilters =
-		searchQuery.trim() !== "" ||
-		filterStatus !== "all" ||
-		filterSource !== "all" ||
-		filterSalesperson !== "all";
+	// notify parent of filtered results
+	useEffect(() => {
+		onFilter?.(hasActiveFilters ? filteredLeads : null);
+	}, [filteredLeads, hasActiveFilters, onFilter]);
 
 	const clearFilters = () => {
 		setSearchQuery("");
