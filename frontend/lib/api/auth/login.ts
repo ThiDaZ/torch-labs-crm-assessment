@@ -1,11 +1,6 @@
 export const loginUser = async (email: string, password: string) => {
 
-	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-	if (!apiUrl) {
-		throw new Error("API URL is not defined in environment variables");
-	}
-
-	const response = await fetch(`${apiUrl}/auth/login`	, {
+	const response = await fetch(`/api/auth/login`	, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",

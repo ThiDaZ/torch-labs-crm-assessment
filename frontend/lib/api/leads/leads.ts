@@ -2,12 +2,7 @@ import { Lead, LeadDetail, LeadListItem } from "@/lib/types";
 
 // Create a new lead API call
 export const createLead = async (newLead: Lead) => {
-	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-	if (!apiUrl) {
-		throw new Error("API URL is not defined in environment variables");
-	}
-
-	const response = await fetch(`${apiUrl}/leads`, {
+	const response = await fetch(`/api/leads`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -26,12 +21,7 @@ export const createLead = async (newLead: Lead) => {
 
 // Get all leads API call
 export const getLeads = async (): Promise<LeadListItem[]> => {
-	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-	if (!apiUrl) {
-		throw new Error("API URL is not defined in environment variables");
-	}
-
-	const response = await fetch(`${apiUrl}/leads`, {
+	const response = await fetch(`/api/leads`, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",
@@ -50,11 +40,7 @@ export const getLeads = async (): Promise<LeadListItem[]> => {
 
 // Get lead by ID API call
 export const getLeadById = async (leadId: string): Promise<LeadDetail> => {
-	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-	if (!apiUrl) {
-		throw new Error("API URL is not defined in environment variables");
-	}
-	const response = await fetch(`${apiUrl}/leads/${leadId}`, {
+	const response = await fetch(`/api/leads/${leadId}`, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",
@@ -89,17 +75,17 @@ export const getLeadById = async (leadId: string): Promise<LeadDetail> => {
 			name: String((lead.assignedSalesperson as { name?: string } | undefined)?.name ?? ""),
 		},
 		createdAt: String(lead.created_at ?? lead.createdAt ?? ""),
-		updatedAt: lead.updated_at ? String(lead.updated_at) : lead.updatedAt ? String(lead.updatedAt) : null,
+		updatedAt: lead.updated_at
+			? String(lead.updated_at)
+			: lead.updatedAt
+				? String(lead.updatedAt)
+				: null,
 	};
 };
 
 // Update lead status API call
 export const updateStatus = async (leadId: string, newStatus: string) => {
-	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-	if (!apiUrl) {
-		throw new Error("API URL is not defined in environment variables");
-	}
-	const response = await fetch(`${apiUrl}/leads/${leadId}`, {
+	const response = await fetch(`/api/leads/${leadId}`, {
 		method: "PATCH",
 		headers: {
 			"Content-Type": "application/json",
@@ -118,11 +104,7 @@ export const updateStatus = async (leadId: string, newStatus: string) => {
 
 // Delete lead API call
 export const deleteLead = async (leadId: string) => {
-	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-	if (!apiUrl) {
-		throw new Error("API URL is not defined in environment variables");
-	}
-	const response = await fetch(`${apiUrl}/leads/${leadId}`, {
+	const response = await fetch(`/api/leads/${leadId}`, {
 		method: "DELETE",
 		headers: {
 			"Content-Type": "application/json",
@@ -140,11 +122,7 @@ export const deleteLead = async (leadId: string) => {
 
 // Update lead API call
 export const updateLead = async (leadId: string, updatedData: Partial<Lead>) => {
-	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-	if (!apiUrl) {
-		throw new Error("API URL is not defined in environment variables");
-	}
-	const response = await fetch(`${apiUrl}/leads/${leadId}`, {
+	const response = await fetch(`/api/leads/${leadId}`, {
 		method: "PUT",
 		headers: {
 			"Content-Type": "application/json",
@@ -169,11 +147,6 @@ export const searchLeads = async (
 	salePerson?: string,
 	order: "asc" | "desc" = "desc",
 ): Promise<LeadListItem[]> => {
-	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-	if (!apiUrl) {
-		throw new Error("API URL is not defined in environment variables");
-	}
-
 	const params = new URLSearchParams();
 	if (query) params.append("query", query);
 	if (status && status !== "all") params.append("status", status);
@@ -181,7 +154,7 @@ export const searchLeads = async (
 	if (salePerson && salePerson !== "all") params.append("salePerson", salePerson);
 	params.append("order", order);
 
-	const response = await fetch(`${apiUrl}/leads/search?${params.toString()}`, {
+	const response = await fetch(`/api/leads/search?${params.toString()}`, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",

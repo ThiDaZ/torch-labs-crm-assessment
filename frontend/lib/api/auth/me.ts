@@ -1,8 +1,6 @@
 export const getCurrentUser = async () => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-  if (!apiUrl) throw new Error("API URL is not defined");
 
-  const res = await fetch(`${apiUrl}/auth/me`, {
+  const res = await fetch(`/api/auth/me`, {
     method: "GET",
     credentials: "include",
   });

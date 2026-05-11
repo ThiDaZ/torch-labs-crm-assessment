@@ -2,12 +2,7 @@ import { Note } from "@/lib/types";
 
 // Get note by lead ID API call
 export const getNotesByLeadId = async (leadId: string) => {
-	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-	if (!apiUrl) {
-		throw new Error("API URL is not defined in environment variables");
-	}
-
-	const response = await fetch(`${apiUrl}/note/${leadId}`, {
+	const response = await fetch(`/api/note/${leadId}`, {
 		method: "GET",
 		headers: {
 			"Content-Type": "application/json",
@@ -25,12 +20,7 @@ export const getNotesByLeadId = async (leadId: string) => {
 
 // Create new note API call
 export const createNote = async (noteData: { leadId: string; content: string }) => {
-	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-	if (!apiUrl) {
-		throw new Error("API URL is not defined in environment variables");
-	}
-
-	const response = await fetch(`${apiUrl}/note`, {
+	const response = await fetch(`/api/note`, {
 		method: "POST",
 		headers: {
 			"Content-Type": "application/json",
@@ -48,12 +38,7 @@ export const createNote = async (noteData: { leadId: string; content: string }) 
 
 // Delete note API call
 export const deleteNote = async (noteId: number) => {
-	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-	if (!apiUrl) {
-		throw new Error("API URL is not defined in environment variables");
-	}
-
-	const response = await fetch(`${apiUrl}/note/${noteId}`, {
+	const response = await fetch(`/api/note/${noteId}`, {
 		method: "DELETE",
 		headers: {
 			"Content-Type": "application/json",
@@ -69,11 +54,7 @@ export const deleteNote = async (noteId: number) => {
 
 // Update note API call
 export const updateNote = async (noteId: number, content: string) => {
-	const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-	if (!apiUrl) {
-		throw new Error("API URL is not defined in environment variables");
-	}
-	const response = await fetch(`${apiUrl}/note/${noteId}`, {
+	const response = await fetch(`/api/note/${noteId}`, {
 		method: "PUT",
 		headers: {
 			"Content-Type": "application/json",
